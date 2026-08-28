@@ -1,0 +1,7 @@
+interface:
+  display_name: "CLI Contract Review"
+  short_description: "Review non-interactive, idempotent, recoverable CLI contracts"
+  default_prompt: "Use $cli-contract-review to review this command-line workflow contract."
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Architecture Survey"
+  short_description: "Map a bounded subsystem and identify evidence-backed structural seams"
+  default_prompt: "Use $architecture-survey to produce a read-only architecture survey for this subsystem."
+
+policy:
+  allow_implicit_invocation: false

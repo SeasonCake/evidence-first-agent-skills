@@ -1,0 +1,7 @@
+interface:
+  display_name: "Verify Claim"
+  short_description: "Verify one claim with matched baseline and treatment evidence"
+  default_prompt: "Use $verify-claim to verify this falsifiable claim with matched evidence."
+
+policy:
+  allow_implicit_invocation: false

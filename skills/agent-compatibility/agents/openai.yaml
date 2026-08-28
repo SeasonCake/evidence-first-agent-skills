@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agent Compatibility"
+  short_description: "Check whether a fresh agent can orient, run, verify, and recover"
+  default_prompt: "Use $agent-compatibility to audit this sanitized repository for agent readiness."
+
+policy:
+  allow_implicit_invocation: false
