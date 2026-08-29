@@ -4,6 +4,8 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Refresh GitHub Actions to the current Node 24-based action releases.
+
 ## [0.1.0] - 2026-08-29
 
 - Add four explicit-only agent skills: architecture survey, claim verification, CLI
