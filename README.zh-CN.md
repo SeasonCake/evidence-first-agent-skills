@@ -10,6 +10,10 @@
 python scripts/verify.py
 ```
 
+安装和显式调用方法见 `INSTALL.md`。每个 skill 都链接一份 synthetic known-good/known-fail 示例，
+机器可读用例矩阵位于 `examples/synthetic_cases.json`。贡献、维护、支持与变更记录分别见
+`CONTRIBUTING.md`、`MAINTAINING.md`、`SUPPORT.md` 和 `CHANGELOG.md`。
+
 上游来源和本地改造分别记录在 `UPSTREAM.md` 与每个 skill 的 `ATTRIBUTION.md`。
 
 Copyright (c) 2026 SeasonCake，以 MIT License 发布。贡献采用 Developer Certificate of

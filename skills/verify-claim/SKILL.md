@@ -34,3 +34,6 @@ not a pass.
 Return the claim, verdict, comparison identities, matched metrics/artifacts, threshold or
 delta, confounds, and `not-run`. If only static inspection is authorized, label it clearly
 and keep the verdict `INCONCLUSIVE` unless the claim itself is static.
+
+For a matched installed-CLI example and verdict boundaries, read
+[the synthetic example](references/synthetic-example.md).

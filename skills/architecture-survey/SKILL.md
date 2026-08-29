@@ -37,3 +37,6 @@ For each, include files, observed friction, current seam, proposed deepening, ex
 leverage, tests that become simpler, migration risk, confidence, and relation to existing
 decisions. End with one recommendation or `no action recommended`, plus the heavy and
 external stages not run. Implementation requires a separate authorized task.
+
+For a bounded known-good/known-fail shape, read
+[the synthetic example](references/synthetic-example.md).

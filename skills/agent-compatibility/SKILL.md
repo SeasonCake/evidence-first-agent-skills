@@ -41,3 +41,6 @@ provenance -> expected output without claiming runtime proof.
 Return `READY`, `READY WITH FRICTION`, or `NOT READY`, followed by at most six top fixes.
 Each fix includes evidence, affected workflow, smallest improvement, and verification.
 List all heavy or external stages not run; do not hide evidence behind a single score.
+
+For a fresh-clone and stale-job recovery example, read
+[the synthetic example](references/synthetic-example.md).

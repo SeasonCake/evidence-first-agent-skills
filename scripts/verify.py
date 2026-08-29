@@ -10,6 +10,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ("architecture-survey", "verify-claim", "cli-contract-review", "agent-compatibility")
+REQUIRED_PUBLIC_FILES = (
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "DCO",
+    "INSTALL.md",
+    "LICENSE",
+    "MAINTAINING.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    ".github/pull_request_template.md",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/skill_proposal.yml",
+    "examples/synthetic_cases.json",
+)
 BANNED = (
     "bidking_lab",
     "c:\\users\\",
@@ -40,7 +55,8 @@ def validate_skill(name: str) -> list[str]:
     skill = root / "SKILL.md"
     agent = root / "agents" / "openai.yaml"
     attribution = root / "ATTRIBUTION.md"
-    for required in (skill, agent, attribution):
+    example = root / "references" / "synthetic-example.md"
+    for required in (skill, agent, attribution, example):
         if not required.is_file():
             errors.append(f"missing {required.relative_to(ROOT)}")
     if errors:
@@ -51,6 +67,8 @@ def validate_skill(name: str) -> list[str]:
         errors.append(f"frontmatter name mismatch for {name}")
     if not metadata.get("description"):
         errors.append(f"description missing for {name}")
+    if "references/synthetic-example.md" not in text:
+        errors.append(f"synthetic example is not linked for {name}")
     yaml = agent.read_text(encoding="utf-8")
     if "allow_implicit_invocation: false" not in yaml:
         errors.append(f"{name} is not explicit-only")
@@ -61,7 +79,9 @@ def validate_skill(name: str) -> list[str]:
         errors.append(f"project origin missing for {name}")
     if "bidking-inference" not in attribution_text:
         errors.append(f"public companion link missing for {name}")
-    combined = "\n".join((text, yaml, attribution_text)).casefold()
+    combined = "\n".join(
+        (text, yaml, attribution_text, example.read_text(encoding="utf-8"))
+    ).casefold()
     for fragment in BANNED:
         if fragment.casefold() in combined:
             errors.append(f"private fragment {fragment!r} in {name}")
@@ -72,6 +92,9 @@ def validate_skill(name: str) -> list[str]:
 
 def main() -> int:
     errors: list[str] = []
+    for relative in REQUIRED_PUBLIC_FILES:
+        if not (ROOT / relative).is_file():
+            errors.append(f"required public-maintenance file is missing: {relative}")
     if not (ROOT / "LICENSE").is_file():
         errors.append("final LICENSE is missing")
     if (ROOT / "LICENSE-DECISION.md").exists():
@@ -84,6 +107,20 @@ def main() -> int:
         errors.append(f"unexpected skill set: {observed}")
     for name in SKILLS:
         errors.extend(validate_skill(name))
+    cases_document = json.loads(
+        (ROOT / "examples" / "synthetic_cases.json").read_text(encoding="utf-8")
+    )
+    if cases_document.get("synthetic") is not True:
+        errors.append("case matrix is not explicitly synthetic")
+    cases = cases_document.get("cases")
+    if not isinstance(cases, dict) or set(cases) != set(SKILLS):
+        errors.append("case matrix does not exactly cover the public skill set")
+    else:
+        for name, case in cases.items():
+            if not isinstance(case, dict) or set(case) != {"known_good", "known_fail"}:
+                errors.append(f"case matrix shape is invalid for {name}")
+            elif not all(isinstance(value, str) and value.strip() for value in case.values()):
+                errors.append(f"case matrix text is empty for {name}")
     upstream = (ROOT / "UPSTREAM.md").read_text(encoding="utf-8")
     if "bdf7aa355337897f167153e05069aca505dae17c" not in upstream:
         errors.append("Cursor upstream commit is not pinned")

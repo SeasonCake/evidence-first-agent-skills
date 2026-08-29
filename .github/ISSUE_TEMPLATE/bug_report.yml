@@ -1,0 +1,42 @@
+name: Skill behavior report
+description: Report a reproducible decision or documentation problem
+title: "[Skill bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Skill
+      options:
+        - architecture-survey
+        - verify-claim
+        - cli-contract-review
+        - agent-compatibility
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: Synthetic request
+      description: Provide a minimal public example without private project material.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected decision
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual decision
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Public-data confirmation
+      options:
+        - label: This report contains no private chat, path, customer data, credential, raw incident log, or production detail.
+          required: true

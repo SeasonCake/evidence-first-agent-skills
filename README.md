@@ -23,6 +23,24 @@ delete anything, and their reports are not substitutes for product-specific form
 python scripts/verify.py
 ```
 
+## Install and invoke
+
+See `INSTALL.md` for a copy-only installation into a personal Codex skills directory.
+Every skill remains explicit-only and is invoked by name, for example:
+
+```text
+Use $verify-claim to verify that this CLI behaves identically after a clean install.
+```
+
+Each skill links one synthetic known-good/known-fail example. The machine-readable case
+matrix is `examples/synthetic_cases.json`.
+
+## Project maintenance
+
+See `CONTRIBUTING.md`, `MAINTAINING.md`, `SUPPORT.md`, `SECURITY.md`, and `CHANGELOG.md`.
+Public issue and pull-request templates reject private incident material and require
+reproducible synthetic evidence.
+
 Upstream inspirations and adaptations are documented in `UPSTREAM.md` and in each skill's
 `ATTRIBUTION.md`.
 

@@ -1,0 +1,29 @@
+name: Skill proposal
+description: Propose a reusable, evidence-backed skill or behavior change
+title: "[Skill proposal] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Repeated workflow problem
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision the skill should improve
+    validations:
+      required: true
+  - type: textarea
+    id: controls
+    attributes:
+      label: Synthetic known-good and known-fail cases
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Why this belongs in a general skill
+    validations:
+      required: true

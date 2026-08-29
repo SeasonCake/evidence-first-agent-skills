@@ -1,0 +1,21 @@
+{
+  "synthetic": true,
+  "cases": {
+    "agent-compatibility": {
+      "known_good": "A fresh clone documents one command, tracks every required fixture, and recovers a stale job from a receipt.",
+      "known_fail": "Startup depends on an ignored local file and a process ID copied from an archived chat."
+    },
+    "architecture-survey": {
+      "known_good": "A bounded caller-and-test trace proves three consumers duplicate the same state transition.",
+      "known_fail": "A large file is declared an architecture defect using line count alone."
+    },
+    "cli-contract-review": {
+      "known_good": "Preflight is side-effect free and the command emits distinct setup-failure and product-failure receipts.",
+      "known_fail": "A missing output path opens an interactive prompt after partial files have already been written."
+    },
+    "verify-claim": {
+      "known_good": "Baseline and treatment use the same input, checker, environment, and explicit threshold.",
+      "known_fail": "A source unit test is used to claim that the installed public executable starts successfully."
+    }
+  }
+}

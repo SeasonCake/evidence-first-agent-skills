@@ -33,3 +33,6 @@ Inspect entrypoint, callers, help, tests, and one successful and one negative pa
 at most six prioritized gaps with evidence, operational impact, smallest change,
 verification, and stage risk. End each gap with `adopt as SOP`, `implement in CLI`, or
 `no change`. Do not execute a release or external operation unless separately authorized.
+
+For a setup-failure versus product-failure contract, read
+[the synthetic example](references/synthetic-example.md).
