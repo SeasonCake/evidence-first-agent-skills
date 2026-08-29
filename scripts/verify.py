@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ("architecture-survey", "verify-claim", "cli-contract-review", "agent-compatibility")
 BANNED = (
-    "bidking-",
+    "bidking_lab",
     "c:\\users\\",
     "c:\\tmp\\",
     "hero_ref",
@@ -56,7 +56,12 @@ def validate_skill(name: str) -> list[str]:
         errors.append(f"{name} is not explicit-only")
     if f"${name}" not in yaml:
         errors.append(f"default prompt does not name ${name}")
-    combined = "\n".join((text, yaml, attribution.read_text(encoding="utf-8"))).casefold()
+    attribution_text = attribution.read_text(encoding="utf-8")
+    if "Project origin:" not in attribution_text:
+        errors.append(f"project origin missing for {name}")
+    if "bidking-inference" not in attribution_text:
+        errors.append(f"public companion link missing for {name}")
+    combined = "\n".join((text, yaml, attribution_text)).casefold()
     for fragment in BANNED:
         if fragment.casefold() in combined:
             errors.append(f"private fragment {fragment!r} in {name}")
@@ -67,6 +72,13 @@ def validate_skill(name: str) -> list[str]:
 
 def main() -> int:
     errors: list[str] = []
+    if not (ROOT / "LICENSE").is_file():
+        errors.append("final LICENSE is missing")
+    if (ROOT / "LICENSE-DECISION.md").exists():
+        errors.append("obsolete license decision placeholder is still present")
+    origin = (ROOT / "PROJECT_ORIGIN.md").read_text(encoding="utf-8")
+    if "bidking-inference" not in origin or "private BidKing" not in origin:
+        errors.append("project origin does not identify the BidKing/public companion relationship")
     observed = tuple(sorted(path.name for path in (ROOT / "skills").iterdir() if path.is_dir()))
     if observed != tuple(sorted(SKILLS)):
         errors.append(f"unexpected skill set: {observed}")

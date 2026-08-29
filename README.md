@@ -1,7 +1,11 @@
-# Evidence-first agent skills (public candidate)
+# Evidence-first agent skills
 
-Four small, explicit Codex skills distilled from real release, UI, CLI, and handoff
-failures:
+Four small, explicit Codex skills distilled from engineering experience building and
+maintaining the private BidKing calculator and its public mathematical companion,
+[`bidking-inference`](https://github.com/SeasonCake/bidking-inference). The reusable
+lessons cover evidence levels, release continuity, CLI contracts, UI verification,
+handoff recovery, and fresh-clone truth. No private source, customer data, raw incident
+record, credential, or production topology is included; see `PROJECT_ORIGIN.md`.
 
 | Skill | Purpose |
 | --- | --- |
@@ -20,4 +24,7 @@ python scripts/verify.py
 ```
 
 Upstream inspirations and adaptations are documented in `UPSTREAM.md` and in each skill's
-`ATTRIBUTION.md`. The final repository license remains an author decision.
+`ATTRIBUTION.md`.
+
+Copyright (c) 2026 SeasonCake. Released under the MIT License. Contributions use the
+Developer Certificate of Origin 1.1 (`git commit -s`); no CLA is required.

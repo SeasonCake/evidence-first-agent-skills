@@ -3,6 +3,9 @@
 No upstream skill was copied verbatim. The public-candidate text is a project-neutral
 rewrite that preserves the following useful ideas and documents the differences.
 
+`PROJECT_ORIGIN.md` separately documents the local engineering lessons that motivated
+these rewrites. Project origin is not upstream source-code provenance.
+
 ## Architecture survey
 
 - Inspiration: Matt Pocock, `improve-codebase-architecture`.
@@ -20,5 +23,5 @@ rewrite that preserves the following useful ideas and documents the differences.
 - Adaptation: three-state evidence verdicts, explicit evidence tiers, runtime conditions
   separated from authorization, durable receipt recovery, and fresh-clone/Git-index truth.
 
-Before publication, the final license file should reproduce the selected license text and
-the repository owner should recheck upstream notices at the pinned identities.
+The repository owner should recheck upstream notices at the pinned identities before
+publishing a release that changes the attributed material.
