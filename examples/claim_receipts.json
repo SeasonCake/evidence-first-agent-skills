@@ -1,0 +1,45 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "complete-positive",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-five", "status": "complete", "complete": true, "matches": 1},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "observed_in_selected_scope", "absence_supported": false, "proves_event_never_happened": false}
+    },
+    {
+      "id": "complete-negative-is-scoped",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-five", "status": "complete", "complete": true, "matches": 0},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "not_observed_in_selected_scope", "absence_supported": true, "proves_event_never_happened": false}
+    },
+    {
+      "id": "partial-negative-is-not-absence",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-five", "status": "partial", "complete": false, "matches": 0},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "inconclusive", "absence_supported": false, "proves_event_never_happened": false}
+    },
+    {
+      "id": "timeout-is-not-absence",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-five", "status": "timeout", "complete": false, "matches": 0},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "inconclusive", "absence_supported": false, "proves_event_never_happened": false}
+    },
+    {
+      "id": "multiline-query-is-not-a-negative",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-four\nstep-five", "status": "complete", "complete": true, "matches": 0},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "unsupported_query", "absence_supported": false, "proves_event_never_happened": false}
+    },
+    {
+      "id": "refused-query-is-not-absence",
+      "receipt": {"kind": "search", "scope": "fixture-alpha", "query": "step-five", "status": "refused", "complete": false, "matches": 0},
+      "expected": {"assessment_scope": "fixture-alpha", "verdict": "inconclusive", "absence_supported": false, "proves_event_never_happened": false}
+    },
+    {
+      "id": "measured-gate-is-not-release-pass",
+      "receipt": {"kind": "maturity", "gate": "toy-check", "maturity": "measured"},
+      "expected": {"assessment_scope": "explicit_gate_maturity_only", "gate": "toy-check", "ready": true, "release_assessed": false}
+    },
+    {
+      "id": "unmeasured-gate-is-not-release-failure",
+      "receipt": {"kind": "maturity", "gate": "toy-check", "maturity": "implemented"},
+      "expected": {"assessment_scope": "explicit_gate_maturity_only", "gate": "toy-check", "ready": false, "release_assessed": false}
+    }
+  ]
+}
