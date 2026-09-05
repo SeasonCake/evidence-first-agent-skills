@@ -3,19 +3,23 @@
   "cases": {
     "agent-compatibility": {
       "known_good": "A fresh clone documents one command, tracks every required fixture, and recovers a stale job from a receipt.",
-      "known_fail": "Startup depends on an ignored local file and a process ID copied from an archived chat."
+      "known_fail": "Startup depends on an ignored local file and an archived PID, or a missing question tool forces installation of a new service."
     },
     "architecture-survey": {
       "known_good": "A bounded caller-and-test trace proves three consumers duplicate the same state transition.",
-      "known_fail": "A large file is declared an architecture defect using line count alone."
+      "known_fail": "A large file alone triggers a whole-workspace scan and an unselected refactor."
     },
     "cli-contract-review": {
       "known_good": "Preflight is side-effect free and the command emits distinct setup-failure and product-failure receipts.",
-      "known_fail": "A missing output path opens an interactive prompt after partial files have already been written."
+      "known_fail": "A missing output path opens a prompt after partial writes, or truncated output is mistaken for bounded traversal."
     },
     "verify-claim": {
       "known_good": "Baseline and treatment use the same input, checker, environment, and explicit threshold.",
-      "known_fail": "A source unit test is used to claim that the installed public executable starts successfully."
+      "known_fail": "A source unit test proves an installed CLI claim, or an incomplete export is used to deny an earlier user-observed event."
+    },
+    "intent-checkpoint": {
+      "known_good": "A consequential unselected protection proposal becomes a short scope question; an explicit bounded choice proceeds without repeat approval.",
+      "known_fail": "An old test-signing note becomes a release requirement, or an unanswered preselected option is recorded as user consent."
     }
   }
 }

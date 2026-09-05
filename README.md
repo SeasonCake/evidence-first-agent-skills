@@ -1,19 +1,20 @@
 # Evidence-first agent skills
 
-Turn engineering claims into reproducible evidence with four focused Codex skills.
+Turn engineering claims and consequential choices into clear next actions with five focused Codex skills.
 Survey an architecture, verify a behavior, review a CLI contract, or test whether a
 fresh agent can run and recover a project. The workflows grew from building BidKing
 and its mathematical companion, [`bidking-inference`](https://github.com/SeasonCake/bidking-inference),
 and include synthetic examples you can run and adapt.
 
-| Skill | Purpose |
-| --- | --- |
-| `architecture-survey` | Identify evidence-backed structural improvements and their affected consumers. |
-| `verify-claim` | Verify one falsifiable behavior with matched baseline/treatment evidence. |
-| `cli-contract-review` | Review non-interactive, fail-fast, idempotent CLI and receipt contracts. |
-| `agent-compatibility` | Test whether a fresh agent can orient, run, verify, and recover from tracked repository truth. |
+| Skill | Purpose | Invocation |
+| --- | --- | --- |
+| `intent-checkpoint` | Resolve consequential scope choices with a short native question form, without approval loops. | Explicit or context-matched |
+| `architecture-survey` | Identify evidence-backed structural improvements and their affected consumers. | Explicit |
+| `verify-claim` | Verify one falsifiable behavior with matched baseline/treatment evidence. | Explicit |
+| `cli-contract-review` | Review non-interactive, fail-fast, idempotent CLI and receipt contracts. | Explicit |
+| `agent-compatibility` | Test whether a fresh agent can orient, run, verify, and recover from tracked repository truth. | Explicit |
 
-Invoke each skill explicitly by name; installation and usage are below.
+Every skill can be invoked by name. Only `intent-checkpoint` allows automatic matching.
 
 ## Verify
 
@@ -24,7 +25,7 @@ python scripts/verify.py
 ## Install and invoke
 
 See `INSTALL.md` for a copy-only installation into a personal Codex skills directory.
-Every skill remains explicit-only and is invoked by name, for example:
+The original four review skills remain explicit-only, for example:
 
 ```text
 Use $verify-claim to verify that this CLI behaves identically after a clean install.
@@ -32,6 +33,23 @@ Use $verify-claim to verify that this CLI behaves identically after a clean inst
 
 Each skill links one synthetic known-good/known-fail example. The machine-readable case
 matrix is `examples/synthetic_cases.json`.
+
+## Short questions, clear decisions
+
+`intent-checkpoint` helps an agent notice when the next action needs your choice: a scope
+expansion, an owner handoff, or an optional protection proposal. It also teaches when
+**not** to ask: clear, reversible work should continue.
+
+```text
+Use $intent-checkpoint to separate this release fix from the optional signing proposal.
+Ask me only about decisions that would change the selected scope.
+```
+
+The skill prefers a native question form when the host permits one, including Codex's
+`request_user_input_async` when available, and uses a short text question otherwise.
+See [the workflow](skills/intent-checkpoint/SKILL.md) and
+[eight synthetic cases](skills/intent-checkpoint/references/synthetic-example.md).
+It is an instruction-only skill, not a new form service.
 
 ## Hotfix1 engineering case study
 

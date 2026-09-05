@@ -1,6 +1,6 @@
 ---
 name: agent-compatibility
-description: Audit a sanitized repository for fresh-agent onboarding, startup, focused verification, execution continuity, recovery, and documentation reliability. Use before opening a public repository or after major tooling changes.
+description: Audit a public-candidate repository for fresh-agent onboarding, startup, focused verification, execution continuity, recovery, and documentation reliability. Use before opening a public repository or after major tooling changes.
 ---
 
 # Agent Compatibility
@@ -10,7 +10,7 @@ small change without hidden private context or an unnecessarily heavy loop.
 
 ## Boundaries
 
-- Target a sanitized/public candidate or explicitly approved read-only simulation.
+- Target a public-candidate tree or explicitly approved read-only simulation.
 - Do not publish, push, open issues, install dependencies, mutate Git, or run unrelated
   heavy product gates.
 - Missing private inputs are expected; judge whether docs provide a safe public substitute.
@@ -18,7 +18,8 @@ small change without hidden private context or an unnecessarily heavy loop.
 
 ## Surfaces
 
-Inspect sequentially unless the user explicitly authorizes parallel work:
+Inspect the following surfaces sequentially unless the user explicitly authorizes parallel
+work. Start from tracked files and bounded reads, not a recursive workspace search:
 
 1. Inventory: tracked content, ignored residue, and intended export are distinct.
 2. Orientation: README, license, contribution path, guidance, architecture, vocabulary,
@@ -35,6 +36,10 @@ Inspect sequentially unless the user explicitly authorizes parallel work:
 Archived chat, screenshots, local caches, and ignored files must not be required for a fresh
 agent. When execution is prohibited, statically trace dependencies -> entrypoint -> input
 provenance -> expected output without claiming runtime proof.
+
+Check both a material intent fork that should elicit a brief question and a clear selected
+endpoint that should proceed without repeated questions. If a suitable native question tool
+is unavailable, a plain-text fallback should work without adding a new service.
 
 ## Output
 

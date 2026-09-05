@@ -1,13 +1,19 @@
 from __future__ import annotations
 
+import importlib.util
+import json
 import subprocess
 import sys
 import unittest
-import json
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("skill_verifier", ROOT / "scripts" / "verify.py")
+assert SPEC is not None and SPEC.loader is not None
+VERIFIER = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(VERIFIER)
 
 
 class VerifyTest(unittest.TestCase):
@@ -29,6 +35,63 @@ class VerifyTest(unittest.TestCase):
             text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
             self.assertIn("references/synthetic-example.md", text)
             self.assertTrue((skill_root / "references" / "synthetic-example.md").is_file())
+
+    def test_declared_invocation_modes_are_distinct(self) -> None:
+        self.assertTrue(VERIFIER.INVOCATION_POLICIES["intent-checkpoint"])
+        for name in (
+            "architecture-survey", "verify-claim", "cli-contract-review",
+            "agent-compatibility",
+        ):
+            with self.subTest(skill=name):
+                self.assertFalse(VERIFIER.INVOCATION_POLICIES[name])
+                self.assertEqual(VERIFIER.validate_skill(name), [])
+        self.assertEqual(VERIFIER.validate_skill("intent-checkpoint"), [])
+
+    def test_scalar_policy_reads_actual_boolean(self) -> None:
+        for value, expected in (("true", True), ("false", False)):
+            with self.subTest(value=value):
+                document = (
+                    'interface:\n  display_name: "Example"\n'
+                    f"policy:\n  allow_implicit_invocation: {value}\n"
+                )
+                self.assertIs(VERIFIER.parse_invocation_policy(document), expected)
+
+    def test_comment_or_other_section_is_not_policy(self) -> None:
+        for document in (
+            "# policy:\n#   allow_implicit_invocation: false\n",
+            "interface:\n  allow_implicit_invocation: false\n",
+            'policy:\n  note: "allow_implicit_invocation: false"\n',
+        ):
+            with self.subTest(document=document):
+                self.assertIsNone(VERIFIER.parse_invocation_policy(document))
+
+    def test_duplicate_or_invalid_policy_is_rejected(self) -> None:
+        for document in (
+            "policy:\n  allow_implicit_invocation: true\n  allow_implicit_invocation: false\n",
+            "policy:\n  allow_implicit_invocation: true\npolicy:\n  allow_implicit_invocation: false\n",
+            'policy:\n  allow_implicit_invocation: "false"\n',
+            "policy:\n  nested:\n    allow_implicit_invocation: false\n",
+        ):
+            with self.subTest(document=document):
+                self.assertIsNone(VERIFIER.parse_invocation_policy(document))
+
+    def test_real_skill_policy_mismatch_is_reported(self) -> None:
+        original_read = Path.read_text
+        for name, wrong in (("intent-checkpoint", "false"), ("verify-claim", "true")):
+            target = ROOT / "skills" / name / "agents" / "openai.yaml"
+
+            def substitute(path: Path, *args, **kwargs) -> str:
+                if path == target:
+                    return (
+                        f'interface:\n  default_prompt: "Use ${name}"\n'
+                        f"policy:\n  allow_implicit_invocation: {wrong}\n"
+                    )
+                return original_read(path, *args, **kwargs)
+
+            with self.subTest(skill=name), patch.object(Path, "read_text", substitute):
+                errors = VERIFIER.validate_skill(name)
+                self.assertEqual(len(errors), 1)
+                self.assertIn("invocation policy", errors[0])
 
 
 if __name__ == "__main__":

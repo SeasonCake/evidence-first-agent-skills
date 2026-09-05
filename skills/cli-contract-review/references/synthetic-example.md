@@ -23,3 +23,11 @@ question. Both malformed input and a compiler error return exit code 1 with no r
 - Help identifies shell/interpreter assumptions and shows a copyable non-interactive call.
 
 The review reports gaps; it does not execute the build or grant release authority.
+
+## Bounded-read control
+
+`search | first-ten-results` can still scan the whole input. A bounded implementation
+limits traversal and content at the reader, reports incomplete coverage, and stops/reaps
+its owned worker on timeout. A no-hit incomplete result cannot prove absence.
+A `--yes` flag makes a selected command non-interactive; it does not select an unrequested
+deletion or a later release stage.

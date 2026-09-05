@@ -1,19 +1,28 @@
 # Install and invoke
 
-Each folder under `skills/` is a self-contained Codex skill. All four are explicit-only:
-installing them does not add their full instructions to unrelated tasks.
+Each folder under `skills/` is a self-contained Codex skill. The four review skills are
+explicit-only. `intent-checkpoint` permits explicit or context-matched invocation, so it
+can help with a material scope choice without being named every time.
 
 ## Windows PowerShell
 
 ```powershell
-$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE '.codex' }
-$skillHome = Join-Path $codexHome 'skills'
-New-Item -ItemType Directory -Force -Path $skillHome | Out-Null
-Copy-Item -Recurse -Force '.\skills\verify-claim' (Join-Path $skillHome 'verify-claim')
+$taskSkillName = 'intent-checkpoint'
+$taskCodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE '.codex' }
+$taskSkillDirectory = Join-Path $taskCodexHome 'skills'
+$taskSource = (Resolve-Path -LiteralPath (Join-Path '.\skills' $taskSkillName)).Path
+$taskDestination = Join-Path $taskSkillDirectory $taskSkillName
+if (Test-Path -LiteralPath $taskDestination) { throw 'Review the existing local skill before updating it.' }
+New-Item -ItemType Directory -Force -Path $taskSkillDirectory | Out-Null
+Copy-Item -LiteralPath $taskSource -Destination $taskDestination -Recurse
 ```
 
-Repeat the final command for another skill. Restart Codex after installation if the skill
-catalog is already open.
+Run this from the clone root and choose another skill name to install a different folder.
+The example uses the configured `CODEX_HOME/skills` layout verified in our desktop setup.
+Use the user-skill directory exposed by your host; current Codex documentation also lists
+`$HOME/.agents/skills`. See [official skill discovery](https://learn.chatgpt.com/docs/build-skills).
+If the skill does not appear, refresh/restart the host. Do not overwrite an existing local
+adaptation blindly or nest a second same-name folder inside it.
 
 ## Verify before copying
 
@@ -31,6 +40,10 @@ Use the skill name explicitly, for example:
 ```text
 Use $verify-claim to verify that this CLI returns the same result after a clean install.
 ```
+
+For `intent-checkpoint`, native question cards depend on the host's actual tools and
+current mode. If no suitable form is available, the skill uses a concise text question;
+installing the skill does not install a new question API.
 
 ## Uninstall
 

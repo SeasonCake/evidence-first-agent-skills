@@ -9,7 +9,14 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILLS = ("architecture-survey", "verify-claim", "cli-contract-review", "agent-compatibility")
+INVOCATION_POLICIES = {
+    "architecture-survey": False,
+    "verify-claim": False,
+    "cli-contract-review": False,
+    "agent-compatibility": False,
+    "intent-checkpoint": True,
+}
+SKILLS = tuple(INVOCATION_POLICIES)
 REQUIRED_PUBLIC_FILES = (
     "CHANGELOG.md",
     "CODE_OF_CONDUCT.md",
@@ -49,6 +56,27 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return values
 
 
+def parse_invocation_policy(text: str) -> bool | None:
+    """Read this repository's scalar policy declaration, not arbitrary YAML."""
+    headers = list(re.finditer(r"(?m)^policy:[ \t]*(?:#[^\n]*)?$", text))
+    if len(headers) != 1:
+        return None
+    values: list[bool] = []
+    for line in text[headers[0].end() :].splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if not line.startswith((" ", "\t")):
+            break
+        match = re.fullmatch(
+            r"  allow_implicit_invocation: *(true|false) *(?:#.*)?", line
+        )
+        if match:
+            values.append(match.group(1) == "true")
+        elif re.match(r"[ \t]+allow_implicit_invocation\b", line):
+            return None
+    return values[0] if len(values) == 1 else None
+
+
 def validate_skill(name: str) -> list[str]:
     errors: list[str] = []
     root = ROOT / "skills" / name
@@ -70,8 +98,11 @@ def validate_skill(name: str) -> list[str]:
     if "references/synthetic-example.md" not in text:
         errors.append(f"synthetic example is not linked for {name}")
     yaml = agent.read_text(encoding="utf-8")
-    if "allow_implicit_invocation: false" not in yaml:
-        errors.append(f"{name} is not explicit-only")
+    expected_policy = INVOCATION_POLICIES[name]
+    if parse_invocation_policy(yaml) is not expected_policy:
+        errors.append(
+            f"{name} invocation policy must be explicitly {str(expected_policy).lower()}"
+        )
     if f"${name}" not in yaml:
         errors.append(f"default prompt does not name ${name}")
     attribution_text = attribution.read_text(encoding="utf-8")
@@ -122,7 +153,7 @@ def main() -> int:
             elif not all(isinstance(value, str) and value.strip() for value in case.values()):
                 errors.append(f"case matrix text is empty for {name}")
     upstream = (ROOT / "UPSTREAM.md").read_text(encoding="utf-8")
-    if "bdf7aa355337897f167153e05069aca505dae17c" not in upstream:
+    if "93b00b89ef425a9c1bac0d0b317dfc49c930ac99" not in upstream:
         errors.append("Cursor upstream commit is not pinned")
     if not re.search(r"(?i)recorded license: MIT", upstream):
         errors.append("upstream license evidence is missing")

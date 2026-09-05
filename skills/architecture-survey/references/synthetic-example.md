@@ -24,3 +24,10 @@ state, tests, or whether a smaller boundary would remove duplicated complexity.
 - Return `no action recommended` if size and churn are the only evidence.
 
 The example is synthetic and does not authorize a refactor.
+
+## Scope-expansion control
+
+An old signing experiment appears in the selected files. It is not a reason to add a
+protection subsystem or block a release. Keep it separate from the measured architectural
+friction; preserve an explicit user exclusion without asking the same question again.
+Do not follow this lead into a workspace-wide search.

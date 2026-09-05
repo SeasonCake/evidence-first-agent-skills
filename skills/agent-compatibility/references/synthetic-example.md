@@ -20,3 +20,10 @@ a receipt from which an equivalent bounded job can be reconstructed.
 After the fixture is tracked and the recovery receipt is documented, verify in a fresh
 clone that the command passes and stale PID absence triggers reconstruction rather than an
 author authorization request. Then `READY` is possible within the tested scope.
+
+## Question-routing control
+
+A specified heading edit should proceed with a small diff check, without a questionnaire.
+A consequential unresolved design choice should use the host's suitable native question
+tool or a concise text fallback. Failure to expose that tool is not a reason to install
+a form service or claim the repository cannot be used.

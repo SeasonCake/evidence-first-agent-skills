@@ -26,6 +26,10 @@ Review the command surface, not the product implementation.
 - Health deadlines use measured production-scale startup and distinguish loading,
   not-ready, and failed; rollback has independent time.
 - Focused or changed-module modes cannot masquerade as full gates.
+- Read/search budgets limit actual entries, depth, bytes, elapsed time, and owned
+  processes, not just displayed output. Cancellation reaps the owned job; partial
+  coverage is not absence. Non-interactive flags do not supply missing user intent
+  or replace required host permissions.
 
 ## Output
 
@@ -33,6 +37,8 @@ Inspect entrypoint, callers, help, tests, and one successful and one negative pa
 at most six prioritized gaps with evidence, operational impact, smallest change,
 verification, and stage risk. End each gap with `adopt as SOP`, `implement in CLI`, or
 `no change`. Do not execute a release or external operation unless separately authorized.
+If the user selected a concrete reversible endpoint, flag needless re-authorization
+between its normal local steps while preserving unselected external or destructive stages.
 
 For a setup-failure versus product-failure contract, read
 [the synthetic example](references/synthetic-example.md).

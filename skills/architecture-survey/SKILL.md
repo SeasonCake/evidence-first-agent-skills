@@ -16,6 +16,8 @@ without turning the survey into implementation.
 - Prefer a named subsystem. If none is supplied, use a bounded recent-churn window to
   select one narrow area; never perform an unbounded repository scan.
 - Large files, high churn, and dependency counts are discovery leads, not findings.
+- Start from exact files or the tracked index. Bound actual entries, content, output,
+  and elapsed time before broader reads; a glob or truncated output is not a read budget.
 
 ## Method
 
@@ -29,6 +31,10 @@ without turning the survey into implementation.
    not current-source truth.
 6. Prove repeated consumer friction or a real seam before recommending work. An identity
    or dependency update with no semantic delta should end as `no action`.
+
+An architecture or protection suggestion is not an implementation requirement or release
+gate. If a real scope choice is needed, ask a short question with the practical tradeoff;
+do not start the proposed work or override an explicitly reserved later-stage start.
 
 ## Output
 

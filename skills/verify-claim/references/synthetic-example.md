@@ -20,3 +20,11 @@ same JSON as the source entry point for fixture sample.json.
 
 A source unit test alone is `INCONCLUSIVE`; a timeout is not a pass; one mismatched output
 is `NOT VERIFIED`; all matched runs and the negative control passing is `VERIFIED`.
+
+## Event-order control
+
+A user reports seeing a completion screen, then supplies a screenshot from the history
+page. An export lacks the terminal event. The supported conclusion is that this export
+does not establish the terminal boundary, not that the earlier screen never appeared.
+Check the same session's version and callback path before proposing a cause. Preserve
+ordinary artifact paths and hashes for reproduction; removing them is not a stronger check.

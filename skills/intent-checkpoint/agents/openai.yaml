@@ -1,0 +1,6 @@
+interface:
+  display_name: "Intent Checkpoint"
+  short_description: "Clarify consequential choices without approval loops"
+  default_prompt: "Use $intent-checkpoint to resolve the material scope choice and continue only the selected work."
+policy:
+  allow_implicit_invocation: true
