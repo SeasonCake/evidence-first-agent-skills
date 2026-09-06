@@ -1,11 +1,12 @@
 # Evidence-first agent skills
 
 把工程主张核实清楚，把关键选择交给用户，然后顺畅完成已选工作。
-这五个 Codex skill 来自 BidKing、LC2 与配套数学仓
+这六个 Codex skill 来自 BidKing、LC2 与配套数学仓
 [`bidking-inference`](https://github.com/SeasonCake/bidking-inference) 的工程经验，可独立安装和修改。
 
 | 技能 | 用途 |
 | --- | --- |
+| `browser-workflow` | 完成多步骤浏览器编辑，回读已保存结果，异常恢复时避免重复提交 |
 | `intent-checkpoint` | 用简短原生问答澄清真正影响范围的决定，已明确的小事不反复问 |
 | `architecture-survey` | 沿调用与测试找有证据的架构改进点，不把大文件直接判成问题 |
 | `verify-claim` | 用同口径证据验证一个行为或性能主张 |
@@ -20,8 +21,22 @@
 ```
 
 宿主支持时优先使用原生问题卡，例如可用的 `request_user_input_async`；否则用简短文字。
-原四项保持显式调用，新 `intent-checkpoint` 同时允许按任务描述自动匹配。
-查看[技能正文](skills/intent-checkpoint/SKILL.md)与[八个合成正反例](skills/intent-checkpoint/references/synthetic-example.md)。
+原四项保持显式调用，`intent-checkpoint` 和 `browser-workflow` 允许按任务描述自动匹配。
+查看[技能正文](skills/intent-checkpoint/SKILL.md)与[九个合成正反例](skills/intent-checkpoint/references/synthetic-example.md)，
+包括旧问答在新开工指令之后到达时的处理。
+
+## 浏览器编辑，以保存回读收尾
+
+```text
+用 $browser-workflow 在我指定的浏览器中更新这三项说明。
+价格不变，每项都核对真正保存的内容。
+```
+
+保存前核草稿、结果未知先查回执、错误导航不读成旧页面，保留指定浏览器和当前工具权限。
+CLI只是条件性选择，不强行替换现有会话。查看[工作流](skills/browser-workflow/SKILL.md)、
+[六个合成情境](skills/browser-workflow/references/synthetic-example.md)与
+[可选AGENTS入口示例](INSTALL.md#optional-standing-route)。
+技能可发现、情境检查和真实浏览器执行分别验证；不承诺原生焦点问题已修好或所有任务都更快。
 
 ## 安装与验证
 

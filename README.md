@@ -1,6 +1,6 @@
 # Evidence-first agent skills
 
-Turn engineering claims and consequential choices into clear next actions with five focused Codex skills.
+Turn engineering claims, consequential choices, and browser edits into clear next actions with six focused Codex skills.
 Survey an architecture, verify a behavior, review a CLI contract, or test whether a
 fresh agent can run and recover a project. The workflows grew from building BidKing
 and its mathematical companion, [`bidking-inference`](https://github.com/SeasonCake/bidking-inference),
@@ -8,13 +8,15 @@ and include synthetic examples you can run and adapt.
 
 | Skill | Purpose | Invocation |
 | --- | --- | --- |
+| `browser-workflow` | Complete multi-step browser edits with persisted readback and recover without duplicate submissions. | Explicit or context-matched |
 | `intent-checkpoint` | Resolve consequential scope choices with a short native question form, without approval loops. | Explicit or context-matched |
 | `architecture-survey` | Identify evidence-backed structural improvements and their affected consumers. | Explicit |
 | `verify-claim` | Verify one falsifiable behavior with matched baseline/treatment evidence. | Explicit |
 | `cli-contract-review` | Review non-interactive, fail-fast, idempotent CLI and receipt contracts. | Explicit |
 | `agent-compatibility` | Test whether a fresh agent can orient, run, verify, and recover from tracked repository truth. | Explicit |
 
-Every skill can be invoked by name. Only `intent-checkpoint` allows automatic matching.
+Every skill can be invoked by name. `browser-workflow` and `intent-checkpoint` allow
+automatic matching; the original four review skills remain explicit-only.
 
 ## Verify
 
@@ -48,8 +50,25 @@ Ask me only about decisions that would change the selected scope.
 The skill prefers a native question form when the host permits one, including Codex's
 `request_user_input_async` when available, and uses a short text question otherwise.
 See [the workflow](skills/intent-checkpoint/SKILL.md) and
-[eight synthetic cases](skills/intent-checkpoint/references/synthetic-example.md).
+[nine synthetic cases](skills/intent-checkpoint/references/synthetic-example.md), including
+a delayed answer arriving after a newer start.
 It is an instruction-only skill, not a new form service.
+
+## Browser edits that finish with saved evidence
+
+```text
+Use $browser-workflow to update these three descriptions in my selected browser.
+Keep prices unchanged and verify the saved results before moving on.
+```
+
+The workflow covers draft verification, uncertain save outcomes, stale pages and compact
+evidence. It preserves the chosen browser and current provider permissions; CLI use is
+conditional, not a forced replacement. See the [workflow](skills/browser-workflow/SKILL.md),
+[six synthetic cases](skills/browser-workflow/references/synthetic-example.md), and the
+[optional AGENTS routing example](INSTALL.md#optional-standing-route).
+
+Skill discovery, a scenario review and real browser execution are different checks.
+This skill does not promise a native focus fix or universal speed improvement.
 
 ## Hotfix1 engineering case study
 

@@ -38,6 +38,7 @@ class VerifyTest(unittest.TestCase):
 
     def test_declared_invocation_modes_are_distinct(self) -> None:
         self.assertTrue(VERIFIER.INVOCATION_POLICIES["intent-checkpoint"])
+        self.assertTrue(VERIFIER.INVOCATION_POLICIES["browser-workflow"])
         for name in (
             "architecture-survey", "verify-claim", "cli-contract-review",
             "agent-compatibility",
@@ -46,6 +47,7 @@ class VerifyTest(unittest.TestCase):
                 self.assertFalse(VERIFIER.INVOCATION_POLICIES[name])
                 self.assertEqual(VERIFIER.validate_skill(name), [])
         self.assertEqual(VERIFIER.validate_skill("intent-checkpoint"), [])
+        self.assertEqual(VERIFIER.validate_skill("browser-workflow"), [])
 
     def test_scalar_policy_reads_actual_boolean(self) -> None:
         for value, expected in (("true", True), ("false", False)):
@@ -77,7 +79,11 @@ class VerifyTest(unittest.TestCase):
 
     def test_real_skill_policy_mismatch_is_reported(self) -> None:
         original_read = Path.read_text
-        for name, wrong in (("intent-checkpoint", "false"), ("verify-claim", "true")):
+        for name, wrong in (
+            ("intent-checkpoint", "false"),
+            ("browser-workflow", "false"),
+            ("verify-claim", "true"),
+        ):
             target = ROOT / "skills" / name / "agents" / "openai.yaml"
 
             def substitute(path: Path, *args, **kwargs) -> str:
@@ -92,6 +98,21 @@ class VerifyTest(unittest.TestCase):
                 errors = VERIFIER.validate_skill(name)
                 self.assertEqual(len(errors), 1)
                 self.assertIn("invocation policy", errors[0])
+
+    def test_conditional_reference_private_fragment_is_reported(self) -> None:
+        original_read = Path.read_text
+        target = ROOT / "skills" / "browser-workflow" / "references" / "cli.md"
+
+        def substitute(path: Path, *args, **kwargs) -> str:
+            if path == target:
+                return "Synthetic negative control: " + VERIFIER.BANNED[0]
+            return original_read(path, *args, **kwargs)
+
+        self.assertEqual(VERIFIER.validate_skill("browser-workflow"), [])
+        with patch.object(Path, "read_text", substitute):
+            errors = VERIFIER.validate_skill("browser-workflow")
+        self.assertEqual(len(errors), 1)
+        self.assertIn("private fragment", errors[0])
 
 
 if __name__ == "__main__":

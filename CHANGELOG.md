@@ -4,6 +4,13 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Add `browser-workflow` with six synthetic scenarios, conditional CLI guidance, and
+  explicit/context-matched invocation. Document an optional standing `AGENTS.md` route
+  without replacing provider rules or claiming universal performance gains.
+- Tighten `intent-checkpoint` discovery and wording; add a ninth scenario for delayed
+  answers after a newer start. Preserve its invocation policy and existing boundaries.
+- Validate public boundaries across all directly attached Markdown references, including
+  conditional references, with positive/negative regression coverage.
 - Add `intent-checkpoint`: short native question forms for consequential choices,
   text fallback, and eight synthetic cases, including optional protection scope and
   when clear instructions should proceed without repeat approval.

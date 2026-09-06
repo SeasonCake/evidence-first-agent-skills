@@ -1,6 +1,10 @@
 {
   "synthetic": true,
   "cases": {
+    "browser-workflow": {
+      "known_good": "An uncertain save is reconciled from a persisted read view without losing the draft or submitting twice; protected fields remain unchanged.",
+      "known_fail": "A stale page or zero-exit framework script is treated as success, or a blocked target is retried through another CLI."
+    },
     "agent-compatibility": {
       "known_good": "A fresh clone documents one command, tracks every required fixture, and recovers a stale job from a receipt.",
       "known_fail": "Startup depends on an ignored local file and an archived PID, or a missing question tool forces installation of a new service."

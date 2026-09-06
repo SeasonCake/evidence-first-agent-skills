@@ -1,0 +1,7 @@
+interface:
+  display_name: "Browser Workflow"
+  short_description: "Reliable, efficient multi-step browser workflows"
+  default_prompt: "Use $browser-workflow to complete this browser workflow and verify the saved result."
+
+policy:
+  allow_implicit_invocation: true

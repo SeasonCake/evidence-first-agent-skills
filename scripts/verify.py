@@ -15,6 +15,7 @@ INVOCATION_POLICIES = {
     "cli-contract-review": False,
     "agent-compatibility": False,
     "intent-checkpoint": True,
+    "browser-workflow": True,
 }
 SKILLS = tuple(INVOCATION_POLICIES)
 REQUIRED_PUBLIC_FILES = (
@@ -110,9 +111,11 @@ def validate_skill(name: str) -> list[str]:
         errors.append(f"project origin missing for {name}")
     if "bidking-inference" not in attribution_text:
         errors.append(f"public companion link missing for {name}")
-    combined = "\n".join(
-        (text, yaml, attribution_text, example.read_text(encoding="utf-8"))
-    ).casefold()
+    reference_texts = [
+        path.read_text(encoding="utf-8")
+        for path in sorted((root / "references").glob("*.md"))
+    ]
+    combined = "\n".join((text, yaml, attribution_text, *reference_texts)).casefold()
     for fragment in BANNED:
         if fragment.casefold() in combined:
             errors.append(f"private fragment {fragment!r} in {name}")

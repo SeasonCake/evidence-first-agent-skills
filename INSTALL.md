@@ -1,8 +1,8 @@
 # Install and invoke
 
 Each folder under `skills/` is a self-contained Codex skill. The four review skills are
-explicit-only. `intent-checkpoint` permits explicit or context-matched invocation, so it
-can help with a material scope choice without being named every time.
+explicit-only. `intent-checkpoint` and `browser-workflow` permit explicit or context-matched
+invocation, so they can help in their declared scenarios without being named every time.
 
 ## Windows PowerShell
 
@@ -44,6 +44,23 @@ Use $verify-claim to verify that this CLI returns the same result after a clean 
 For `intent-checkpoint`, native question cards depend on the host's actual tools and
 current mode. If no suitable form is available, the skill uses a concise text question;
 installing the skill does not install a new question API.
+
+## Optional standing route
+
+Discovery makes a skill available; it does not prove that every matching task uses it.
+If you want an explicit standing browser-workflow rule, add a short route to your applicable
+user or project `AGENTS.md` after installing the skill:
+
+```text
+For multi-step browser form/editor work, repeated browser operations, browser-task recovery,
+or browser efficiency tuning, read and use browser-workflow from the available skill catalog
+before browser actions. Exclude one-off navigation, ordinary web research, and website
+implementation alone. Preserve the chosen browser/session and current provider permissions.
+```
+
+Keep detailed behavior in the skill instead of copying it into every project. Confirm the
+host actually discovers the installed skill, then test a matching request and a non-matching
+request. Do not claim the route overrides host rules or changes already-running tasks' context.
 
 ## Uninstall
 

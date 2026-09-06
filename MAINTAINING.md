@@ -7,8 +7,8 @@ the repository verifier.
 ## Pull requests
 
 - Keep skills project-neutral and usable without hidden inputs. Preserve each declared
-  invocation policy: the four review skills are explicit-only; `intent-checkpoint`
-  supports explicit and implicit selection.
+  invocation policy: the four review skills are explicit-only; `intent-checkpoint` and
+  `browser-workflow` support explicit and implicit selection.
 - Preserve attribution and distinguish upstream inspiration from local project origin.
 - Avoid universal rules based on one incident; encode only a generalizable decision.
 - Require DCO sign-off and a clean `python scripts/verify.py` result.

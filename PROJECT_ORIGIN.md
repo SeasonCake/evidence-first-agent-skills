@@ -7,6 +7,8 @@ rewrites, not exported private procedures.
 
 | Repeated lesson | Public skill |
 | --- | --- |
+| A consequential scope choice or late answer could be confused with current execution authority. | `intent-checkpoint` |
+| A visible browser draft, successful exit code or stale page could be mistaken for a completed edit. | `browser-workflow` |
 | Large files and repeated churn were sometimes treated as architecture conclusions before consumer evidence existed. | `architecture-survey` |
 | Source tests, hidden entry points, final frames, and artifact claims were sometimes conflated. | `verify-claim` |
 | Shell identity, environment matrices, stale processes, and repeated authorization could dominate a small build change. | `cli-contract-review` |
