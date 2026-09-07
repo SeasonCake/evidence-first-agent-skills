@@ -85,6 +85,10 @@ python -m unittest discover -s tests -p test_claim_receipts.py -v
 
 ## Project maintenance
 
+Share useful progress while a release is unfinished with the
+[interim-maintenance guide](docs/INTERIM_MAINTENANCE.md): a bounded review, a dated
+status packet, synthetic examples of evolving evidence, and explicit publishing boundaries.
+
 See `CONTRIBUTING.md`, `MAINTAINING.md`, `SUPPORT.md`, `SECURITY.md`, and `CHANGELOG.md`.
 Issue and pull-request templates help you provide a small reproducible example.
 

@@ -4,6 +4,9 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Add bilingual guidance for interim progress updates and recurring maintenance, with
+  synthetic examples separating scoped passes, later failures, corrections and deferrals.
+  This documentation update does not change installable skills or invocation policies.
 - Add `browser-workflow` with six synthetic scenarios, conditional CLI guidance, and
   explicit/context-matched invocation. Document an optional standing `AGENTS.md` route
   without replacing provider rules or claiming universal performance gains.

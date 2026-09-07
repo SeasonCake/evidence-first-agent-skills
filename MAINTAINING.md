@@ -20,6 +20,11 @@ trigger the workflow and one that should not; do not send pointless forms to use
 
 ## Release checklist
 
+For a documentation update before a full release, use the
+[interim-maintenance guide](docs/INTERIM_MAINTENANCE.md)
+([简体中文](docs/INTERIM_MAINTENANCE.zh-CN.md)). Keep the currently usable version,
+scoped progress and remaining work distinct; a documentation-only update need not create a tag.
+
 1. Review the exact commit range, skill descriptions, invocation policy, and public boundary.
 2. Run the repository verifier, unit tests, and current Codex skill validator for all skills.
 3. Install each skill into a clean temporary Codex home and verify discovery plus explicit invocation metadata.

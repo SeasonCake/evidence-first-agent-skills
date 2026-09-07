@@ -49,6 +49,8 @@ python scripts/verify.py
 `CONTRIBUTING.md`、`MAINTAINING.md`、`SUPPORT.md` 和 `CHANGELOG.md`。
 
 上游来源和本地改造分别记录在 `UPSTREAM.md` 与每个 skill 的 `ATTRIBUTION.md`。
+版本尚未完成时，查看[中间态维护与分享](docs/INTERIM_MAINTENANCE.zh-CN.md)：
+小范围定期检查、带日期的进展记录、证据变化合成例，以及明确的公开边界。
 热修1的证据核验案例见[工程案例](docs/HOTFIX1_CLAIM_REVIEW.zh-CN.md)，项目关系见 `PROJECT_ORIGIN.md`。
 若这些流程对你有帮助，欢迎 Star、提供可复现的 Issue，或提交改进 PR。
 
