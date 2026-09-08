@@ -50,8 +50,8 @@ Ask me only about decisions that would change the selected scope.
 The skill prefers a native question form when the host permits one, including Codex's
 `request_user_input_async` when available, and uses a short text question otherwise.
 See [the workflow](skills/intent-checkpoint/SKILL.md) and
-[nine synthetic cases](skills/intent-checkpoint/references/synthetic-example.md), including
-a delayed answer arriving after a newer start.
+[twelve synthetic cases](skills/intent-checkpoint/references/synthetic-example.md), including
+delayed answers, forwarded scope statements, and local completion within an unfinished goal.
 It is an instruction-only skill, not a new form service.
 
 ## Browser edits that finish with saved evidence

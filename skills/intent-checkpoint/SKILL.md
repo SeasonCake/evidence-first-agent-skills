@@ -15,6 +15,10 @@ Compare the latest instruction with the proposed action: object, outcome, owner,
 and exclusions. Resolve factual uncertainty with a cheap in-scope check first; do not
 ask the user to diagnose for you.
 
+For forwarded advice or restrictions, establish who selected them and which owner/stage
+they govern. Delivery as a user message does not itself turn a sender's scope statement
+into a new author decision.
+
 - Clear selected endpoint: perform its normal reversible steps without repeated questions.
 - Material fork: ask when plausible interpretations change behavior, ownership,
   deliverables, substantial cost, or destructive/external/later-stage action.
@@ -53,6 +57,11 @@ Correlate each answer with its original question and scope, not its arrival posi
 After compaction or delayed/replayed delivery, reconcile it with the latest substantive
 instruction and current stage. An old planning answer cannot undo a later explicit start
 or repeat completed work. Ask only if a genuinely new conflict remains.
+
+Apply local completion, blockers and follow-up questions only to their affected scope.
+Continue other selected work unless the user changes the goal or a verified shared
+dependency prevents it. Reaching the selected endpoint is a valid stopping point;
+describe the next stage without inventing its authorization.
 
 Record consequential decisions briefly in the existing plan/nearest record: selected
 action, object, stage and exclusions. No separate receipt system is required; historical

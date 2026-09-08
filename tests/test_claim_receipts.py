@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,27 @@ from examples.claim_receipts import LINE_SEPARATORS, classify  # noqa: E402
 
 
 class ClaimReceiptTest(unittest.TestCase):
+    def test_local_examples_win_over_an_unrelated_installed_package(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            shadow = Path(directory)
+            package = shadow / "examples"
+            package.mkdir()
+            (package / "__init__.py").write_text(
+                "raise RuntimeError('unrelated examples package was imported')\n",
+                encoding="utf-8",
+            )
+            script = (
+                "import sys; sys.path[:0] = " + repr([str(ROOT), str(shadow)])
+                + "; import examples.claim_receipts as target; print(target.__file__)"
+            )
+            completed = subprocess.run(
+                [sys.executable, "-c", script], cwd=ROOT, capture_output=True,
+                text=True, timeout=10,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual(Path(completed.stdout.strip()).resolve(),
+                             (ROOT / "examples" / "claim_receipts.py").resolve())
+
     def receipt(self, **changes) -> dict[str, object]:
         result = {"kind": "search", "scope": "fixture-alpha", "query": "step-five",
                   "status": "complete", "complete": True, "matches": 0}

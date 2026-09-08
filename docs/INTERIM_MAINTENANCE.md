@@ -49,5 +49,5 @@ version. Keep private requests, credentials, customer records and operational de
 of that summary. Retain the internal evidence needed to resume the work; removing details
 from the public page should not destroy the recovery trail.
 
-For the companion project's actual, explicitly unfinished snapshot, see
-[development progress](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEVELOPMENT_STATUS.md).
+For a dated companion-project example that distinguishes released work from remaining
+work, see [product status](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEVELOPMENT_STATUS.md).

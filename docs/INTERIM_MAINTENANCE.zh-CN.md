@@ -41,5 +41,5 @@
 公开说明可以写用户价值、验证范围、限制和当前支持版本；不放入私密请求、凭据、客户记录或
 运维细节。内部仍保留恢复工作所需的证据；从公开页面省去细节，不等于删除内部恢复链。
 
-配套项目的真实、明确未完成的中间态示例见
-[研发进展](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEVELOPMENT_STATUS.zh-CN.md)。
+配套项目按日期区分已发布内容与后续未完工作的示例见
+[产品状态](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEVELOPMENT_STATUS.zh-CN.md)。

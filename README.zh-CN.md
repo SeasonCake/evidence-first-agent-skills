@@ -22,8 +22,8 @@
 
 宿主支持时优先使用原生问题卡，例如可用的 `request_user_input_async`；否则用简短文字。
 原四项保持显式调用，`intent-checkpoint` 和 `browser-workflow` 允许按任务描述自动匹配。
-查看[技能正文](skills/intent-checkpoint/SKILL.md)与[九个合成正反例](skills/intent-checkpoint/references/synthetic-example.md)，
-包括旧问答在新开工指令之后到达时的处理。
+查看[技能正文](skills/intent-checkpoint/SKILL.md)与[十二个合成正反例](skills/intent-checkpoint/references/synthetic-example.md)，
+包括延迟答复、转述限制的来源，以及整体目标未完时怎样处理局部完成。
 
 ## 浏览器编辑，以保存回读收尾
 

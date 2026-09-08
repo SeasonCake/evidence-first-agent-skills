@@ -4,6 +4,12 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Make synthetic examples an explicit local package so an unrelated installed
+  `examples` package cannot shadow fixture imports; cover the collision in a fresh process.
+- Clarify forwarded scope ownership and local-versus-overall completion in
+  `intent-checkpoint`; add three synthetic cases and preserve later explicit starts/pauses.
+  [Read-only forward scenario review](docs/INTENT_SCENARIO_REVIEW_2026-09-08.md)
+  covers both prompt and no-prompt decisions, not automatic matching or live host behavior.
 - Add bilingual guidance for interim progress updates and recurring maintenance, with
   synthetic examples separating scoped passes, later failures, corrections and deferrals.
   This documentation update does not change installable skills or invocation policies.
