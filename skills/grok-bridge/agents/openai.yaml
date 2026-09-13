@@ -1,0 +1,6 @@
+interface:
+  display_name: "Grok Bridge"
+  short_description: "Persistent Grok tasks with bounded completion return"
+  default_prompt: "Use $grok-bridge to create or continue the selected Grok task and verify its result."
+policy:
+  allow_implicit_invocation: true

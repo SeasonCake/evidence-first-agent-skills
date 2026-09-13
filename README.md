@@ -1,6 +1,6 @@
 # Evidence-first agent skills
 
-Turn engineering claims, consequential choices, and browser edits into clear next actions with six focused Codex skills.
+Turn engineering claims, consequential choices, browser edits and Grok delegation into clear next actions with seven focused Codex skills.
 Survey an architecture, verify a behavior, review a CLI contract, or test whether a
 fresh agent can run and recover a project. The workflows grew from building BidKing
 and its mathematical companion, [`bidking-inference`](https://github.com/SeasonCake/bidking-inference),
@@ -9,24 +9,37 @@ and include synthetic examples you can run and adapt.
 | Skill | Purpose | Invocation |
 | --- | --- | --- |
 | `browser-workflow` | Complete multi-step browser edits with persisted readback and recover without duplicate submissions. | Explicit or context-matched |
+| `grok-bridge` | Use an installed runtime for persistent Grok tasks, canonical context and finite completion return. | Explicit or context-matched |
 | `intent-checkpoint` | Resolve consequential scope choices with a short native question form, without approval loops. | Explicit or context-matched |
 | `architecture-survey` | Identify evidence-backed structural improvements and their affected consumers. | Explicit |
 | `verify-claim` | Verify one falsifiable behavior with matched baseline/treatment evidence. | Explicit |
 | `cli-contract-review` | Review non-interactive, fail-fast, idempotent CLI and receipt contracts. | Explicit |
 | `agent-compatibility` | Test whether a fresh agent can orient, run, verify, and recover from tracked repository truth. | Explicit |
 
-Every skill can be invoked by name. `browser-workflow` and `intent-checkpoint` allow
+Every skill can be invoked by name. `browser-workflow`, `intent-checkpoint` and `grok-bridge` allow
 automatic matching; the original four review skills remain explicit-only.
+
+## Complete integrations
+
+[Grok ↔ Codex](integrations/grok-codex-bridge/README.md) includes maintained Python runtime,
+explicit setup/recovery, source compatibility patches and synthetic tests. Its companion
+Skill teaches usage; copying that Skill alone does not install the runtime or a provider.
+Native GPT routing stays separate, and exact host limitations remain documented.
+
+The original six workflows remain instruction/verification skills. Integrations live under
+`integrations/` so executable setup and runtime dependencies are not mislabeled as a simple Skill.
 
 ## Verify
 
 ```powershell
 python scripts/verify.py
+node --test tests/browser-transaction.test.js
 ```
 
 ## Install and invoke
 
 See `INSTALL.md` for a copy-only installation into a personal Codex skills directory.
+For the Grok runtime, also follow its [separate setup](integrations/grok-codex-bridge/SETUP.md).
 The original four review skills remain explicit-only, for example:
 
 ```text

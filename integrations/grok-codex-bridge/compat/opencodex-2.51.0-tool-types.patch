@@ -1,0 +1,59 @@
+diff --git a/src/lib/tool-argument-integers.ts b/src/lib/tool-argument-integers.ts
+--- a/src/lib/tool-argument-integers.ts
++++ b/src/lib/tool-argument-integers.ts
+@@ -86,6 +86,16 @@ const U64_NUMBER_FIELDS = new Set(["timeout_ms"]);
+ // namespaced tool; the wait-only map keeps that path byte-identical.
+ const U64_NUMBER_FIELDS_BY_TOOL = new Map<string, ReadonlySet<string>>([
+   ["wait", new Set(["yield_time_ms", "max_tokens"])],
++  // Local Codex Desktop/Grok P0 reproductions, 2026-09-12: these exact native
++  // fields reject integral float serialization before execution (u64 / i32).
++  ["exec_command", new Set(["yield_time_ms"])],
++  ["write_stdin", new Set(["session_id"])],
++]);
++
++// One observed app field arrived as a numeric string. Keep qualified identity;
++// neither unrelated tool names nor arbitrary numeric strings are candidates.
++const SAFE_NUMBER_STRING_FIELDS_BY_TOOL = new Map<string, ReadonlySet<string>>([
++  ["mcp__codex_app__wait_threads", new Set(["timeoutMs"])],
+ ]);
+ 
+ /** True when the node accepts a JSON number (`integer` or `number`), so a numeric
+@@ -159,6 +169,26 @@ function coerceValue(
+   if (depth > 64) return { value, changed: false };
+   const resolved = schema ? resolveRef(schema, root, new Set()) : undefined;
+ 
++  if (typeof value === "string" && resolved && propertyName !== undefined
++    && SAFE_NUMBER_STRING_FIELDS_BY_TOOL.get(toolName ?? "")?.has(propertyName) === true) {
++    const branches = compositionBranches(resolved);
++    const numericDeclared = declaresNumeric(resolved) || branches.some(declaresNumeric);
++    const stringDeclared = declaresString(resolved) || branches.some(declaresString);
++    // Zero-only decimal suffixes (the captured "120000.0") preserve the integer.
++    // No nonzero fractions, leading zeros, whitespace, exponents, unsafe integers or
++    // string/numeric unions: those do not have this one schema-required reading.
++    if (numericDeclared && !stringDeclared && /^(?:0|-?[1-9]\d*)(?:\.0+)?$/.test(value)) {
++      const number = Number(value);
++      if (safelyIntegral(number)) {
++        // Value-free evidence that the exact compatibility branch ran. Never log
++        // arguments, prompts, thread identifiers, credentials or account details.
++        console.error("[grok-codex-bridge] wait_threads.timeoutMs: numeric-string normalized");
++        return { value: number, changed: true };
++      }
++    }
++    return { value, changed: false };
++  }
++
+   if (typeof value === "number") {
+     if (!resolved) return { value, changed: false };
+     const branches = compositionBranches(resolved);
+diff --git a/src/responses/function-call-compat.ts b/src/responses/function-call-compat.ts
+--- a/src/responses/function-call-compat.ts
++++ b/src/responses/function-call-compat.ts
+@@ -131,7 +131,7 @@ function repairItem(item: unknown, schemas: FunctionCallRepairSchemas, completed
+       if (unsafe) return item;
+     } catch { return item; }
+   }
+-  const argumentsText = coerceIntegerToolArguments(raw || "{}", schema.parameters, schema.namespace ? undefined : schema.name);
++  const argumentsText = coerceIntegerToolArguments(raw || "{}", schema.parameters, namespacedToolName(schema.namespace, schema.name));
+   return argumentsText === raw ? item : { ...item, arguments: argumentsText };
+ }
+ 

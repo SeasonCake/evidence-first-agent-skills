@@ -16,5 +16,6 @@ rewrites, not exported private procedures.
 
 The repository intentionally excludes private source, customer data, credentials,
 production topology, raw incident logs, private paths, and proprietary assets. The
-published material is limited to reusable process ideas, synthetic examples, and
-independently written instructions.
+published material contains reusable process ideas, synthetic examples, independently
+written instructions and the separately packaged Grok desktop integration. That runtime
+has its own source/patch notices and excludes private account and task data.

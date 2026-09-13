@@ -4,6 +4,16 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Add `grok-bridge` as a seventh Skill, with the full desktop integration separately
+  under `integrations/`: explicit configuration, native-preserving startup catalog,
+  persistent tasks, context/trace/permission inspection and finite native result return.
+- Add portable protocol/configuration tests and retained MIT compatibility patches;
+  distinguish source setup from host acceptance and exclude private runtime/account data.
+- Extend browser batch/read-only guidance with a pure transaction helper and executable
+  positive/negative controls; reject non-JSON map objects without changing browser permissions.
+- Refine existing verification/CLI/compatibility guidance for launcher/owner transitions,
+  capture versus save time, yielded handles, stop versus reaped, and actual loaded settings.
+
 - Make synthetic examples an explicit local package so an unrelated installed
   `examples` package cannot shadow fixture imports; cover the collision in a fresh process.
 - Clarify forwarded scope ownership and local-versus-overall completion in

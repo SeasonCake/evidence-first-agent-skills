@@ -18,3 +18,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python scripts/verify.py
       - run: python -m unittest discover -s tests -v
+      - run: node --test tests/browser-transaction.test.js
+
+  grok-integration:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify portable bridge protocol and configuration fixtures without model calls
+        working-directory: integrations/grok-codex-bridge
+        run: python -B -m unittest discover -s tests -v

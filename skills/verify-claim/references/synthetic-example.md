@@ -1,5 +1,17 @@
 # Synthetic example
 
+## Native action and observation controls
+
+A self-owned launcher reports no targetable window, then exits. Fresh enumeration shows
+its identified child owns the intended ready window. Verify that bounded startup path;
+do not call it failure from the launch result alone or generalize every no-window result
+to success. If a permission prompt remains pending, the outcome is still unresolved.
+
+A click returns a screenshot with no independent post-state change. That proves a capture,
+not the button's effect. A later window disappearance should be checked against the actual
+owner before repeating input. Reused screenshot IDs and save timestamps are not global
+capture identities. These are synthetic decisions, not a live UI performance benchmark.
+
 Use this example to check evidence-tier separation.
 
 ## Claim

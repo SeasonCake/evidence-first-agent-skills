@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import hashlib
+import tempfile
 import subprocess
 import sys
 import unittest
@@ -17,6 +19,18 @@ SPEC.loader.exec_module(VERIFIER)
 
 
 class VerifyTest(unittest.TestCase):
+    def test_integration_manifest_and_private_content_controls(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory);sample = root/'example.py';sample.write_text('print("synthetic")\n',encoding='utf-8')
+            def manifest():
+                (root/'SOURCE_MANIFEST.json').write_text(json.dumps({'schema_version':1,
+                    'files':{'example.py':hashlib.sha256(sample.read_bytes()).hexdigest()}}),encoding='utf-8')
+            manifest();self.assertEqual(VERIFIER.integration_errors(root),[])
+            sample.write_text('changed\n',encoding='utf-8')
+            self.assertIn('Integration source manifest differs from actual maintained files',VERIFIER.integration_errors(root))
+            sample.write_text(VERIFIER.BANNED[0],encoding='utf-8');manifest()
+            self.assertTrue(any('Private fragment' in e for e in VERIFIER.integration_errors(root)))
+
     def test_repository_verifier_passes(self) -> None:
         subprocess.run([sys.executable, "scripts/verify.py"], cwd=ROOT, check=True)
 

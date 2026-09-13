@@ -1,8 +1,12 @@
 # Install and invoke
 
 Each folder under `skills/` is a self-contained Codex skill. The four review skills are
-explicit-only. `intent-checkpoint` and `browser-workflow` permit explicit or context-matched
+explicit-only. `intent-checkpoint`, `browser-workflow` and `grok-bridge` permit explicit or context-matched
 invocation, so they can help in their declared scenarios without being named every time.
+
+`grok-bridge` additionally requires the [complete integration runtime](integrations/grok-codex-bridge/SETUP.md).
+Copying its instruction folder alone does not configure a model/provider or completion
+return. Other skills remain copy-only and do not acquire those runtime dependencies.
 
 ## Windows PowerShell
 

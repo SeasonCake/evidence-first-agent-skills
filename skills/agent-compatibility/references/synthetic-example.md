@@ -21,6 +21,14 @@ After the fixture is tracked and the recovery receipt is documented, verify in a
 clone that the command passes and stale PID absence triggers reconstruction rather than an
 author authorization request. Then `READY` is possible within the tested scope.
 
+## Configuration versus runtime control
+
+A catalog says a synthetic model has a 500000-token window, but its runtime reports
+258400 after creation and warm continuation. Report friction and diagnose the loader;
+do not call the setup correct from the file alone. A matched control loading the same
+catalog at process startup can distinguish a loading-time fallback without changing the
+window numbers or replaying a real long conversation. Preserve unrelated native rows.
+
 ## Question-routing control
 
 A specified heading edit should proceed with a small diff check, without a questionnaire.

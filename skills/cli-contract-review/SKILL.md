@@ -18,6 +18,9 @@ Review the command surface, not the product implementation.
 - Repeating success is idempotent or reports `already complete`.
 - Exit codes and machine receipts separate pass, product failure, setup/input failure,
   timeout, partial result, and not-run.
+- A yielded command handle remains running. Recovery continues that handle; only the
+  defined terminal receipt establishes completion/timeout. Requesting stop does not prove
+  the owned process/thread was reaped, and its business error is separate from successful cleanup.
 - Paths are literal and containment-checked; temporary output has an owner, lifecycle,
   cleanup disposition, and recovery source.
 - Supported shells and missing/asymmetric TEMP/TMP combinations are explicit.

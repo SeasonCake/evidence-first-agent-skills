@@ -24,6 +24,10 @@
     "intent-checkpoint": {
       "known_good": "A consequential unselected protection proposal becomes a short scope question; an explicit bounded choice proceeds without repeat approval.",
       "known_fail": "An old test-signing note becomes a release requirement, or an unanswered preselected option is recorded as user consent."
+    },
+    "grok-bridge": {
+      "known_good": "One ready synthetic child/turn/parent binding, one finite observer, same-handle continuation and actual native receipt at the parent.",
+      "known_fail": "A returned ID or catalog file is treated as readiness/runtime proof, or a yielded collector is aborted and mislabeled timeout."
     }
   }
 }

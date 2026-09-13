@@ -28,6 +28,8 @@ work. Start from tracked files and bounded reads, not a recursive workspace sear
    or machine-specific paths.
 4. Validation: one focused positive/negative check that finishes quickly.
 5. Docs reliability: commands, paths, versions, expected output, and failure guidance agree.
+   Check effective runtime metadata after creation and warm continuation when the claim
+   depends on settings; a saved catalog or default is not proof it was loaded by that process.
 6. Continuity: a selected reversible endpoint proceeds without repeated authorization;
    runtime input is not misclassified as authority, while external/destructive stages stop.
 7. Recovery: stale jobs recover from durable receipts, process absence uses exact identity,

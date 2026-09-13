@@ -1,7 +1,7 @@
 ---
 name: browser-workflow
-description: "Execute multi-step or repeated browser workflows with reliable edits, saved-result verification, and compact evidence. Use for form/editor workflows, browser-task recovery, or browser efficiency tuning; not one-off navigation, ordinary web research, or website implementation by itself."
 license: MIT
+description: "Execute multi-step or repeated browser workflows with reliable edits, saved-result verification, and compact evidence. Use for form/editor workflows, browser-task recovery, or browser efficiency tuning; not one-off navigation, ordinary web research, or website implementation by itself."
 ---
 
 # Browser Workflow
@@ -25,6 +25,11 @@ confirmation requirements, or tool-specific skill. Read those instructions befor
 
 ## Treat edits as small transactions
 
+For repeated items, read [batch execution](references/batch-execution.md) before editing.
+Prepare shared content and item-specific deltas once, then reuse the first proven item
+procedure. The reference includes a small provider-neutral plan/check/receipt helper;
+it does not replace browser observations or grant a browser execution route.
+
 Identify each target by its stable business key, not a stale row number. For each item:
 
 1. Read the live baseline and distinguish owned fields from surrounding content.
@@ -35,9 +40,10 @@ Identify each target by its stable business key, not a stale row number. For eac
 3. Read back the draft before saving. Unexpected text, duplicates or changed surrounding
    content are a reason to stop that item's save and determine ownership, not to overwrite
    the whole form. Continue independent items only when their state is unambiguous.
-4. Save once, then obtain an authoritative confirmation and a fresh persisted readback
-   where available (reopen/reload the item after a clear save result). A success toast or
-   zero exit code alone does not prove the requested content persisted.
+4. Save once, observe an explicit settled state, then obtain a fresh persisted readback
+   where available. Judge readiness from the target's identity, loaded fields and usable
+   controls, not a title alone. A missing toast is not proof of failure; a toast or zero
+   exit code is not proof of persistence. Do not reload a draft while saving is pending.
 
 If submission times out or its outcome is unknown, inspect the saved state or transaction
 receipt before retrying. Prefer a non-mutating receipt or separate read view so the existing
@@ -57,6 +63,11 @@ An irreversible action still needs the authority required by the active provider
   CSS selectors are different representations—confirm the actual one before use.
 - Inspect the actual rendered surface when layout or visible copy matters. A DOM read,
   HTTP response or hidden render does not prove visible correctness.
+- For read-heavy multi-page tasks, reuse navigation/extraction only after confirming
+  the page family. Keep source identity, required facts and completeness in the result
+  table; a login shell, collapsed post or stale previous page is not retrieved content.
+  Read [read-only collections](references/read-only.md) when
+  evaluating repeated extraction. Do not force a save workflow onto read-only tasks.
 
 ## Recover without masking the failure
 
@@ -74,10 +85,12 @@ An irreversible action still needs the authority required by the active provider
   work continues; do not claim the workflow fixed native focus or requires stopping all
   work. Do not run a human-input experiment unless the user selected it.
 
-Close with changed items, persisted verification, failures/unknowns, and remaining input.
+Keep one item-result record during execution and derive the completion receipt/report
+from it; do not reread every page just to recreate the same closing facts. Reverify only
+stale, uncertain or newly changed items. Close with changed items, persisted verification,
+failures/unknowns, and remaining input.
 For performance claims, separate tool runtime, model round-trips, returned bytes and total
 task latency. A fixed-page benchmark is not proof of universal speed or account-usage savings.
 
 When evaluating or adapting the workflow, use the [synthetic decision cases](references/synthetic-example.md).
-They distinguish successful recovery from duplicate submission, wrong-page reads and
-incorrect speed claims; they are not records of real user interactions.
+They are decision controls, not records of real user interactions.

@@ -33,6 +33,12 @@ Preserve the user's reported event order and sample provenance. A missing event 
 incomplete export does not prove it never occurred; a later review screen does not prove
 an earlier completion screen was absent. Align session, version, path, and timestamps.
 
+For an action/launch claim, preserve the selected entry and distinguish request issued,
+waiting for user input, target pending, observed readiness, and definite failure. A launcher
+may exit while its real window owner remains alive. A screenshot-readable but tree-limited
+window does not prove every input worked; verify the requested post-state. Keep capture
+time separate from file-save time, and scope screenshot IDs to their observation.
+
 Keep canonical local evidence and reproducibility metadata within the selected workflow.
 Paths, hashes, filenames, and non-secret identifiers are not secret by shape alone; derive
 external views by content and destination without rewriting the original evidence.
