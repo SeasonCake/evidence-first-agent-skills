@@ -26,6 +26,19 @@ explicit setup/recovery, source compatibility patches and synthetic tests. Its c
 Skill teaches usage; copying that Skill alone does not install the runtime or a provider.
 Native GPT routing stays separate, and exact host limitations remain documented.
 
+The optional [native model-picker route](integrations/grok-codex-bridge/MODEL_PICKER.md)
+pairs Grok selections with their provider, including idle GPT/Grok switches. It includes
+the stdio router and Windows bootstrap source; the original Codex backend still handles
+authentication, tools and task history.
+
+[Watch the 68-second English demo](https://x.com/zheng_qili666/status/2099349396895019095) ·
+[Chinese version on Bilibili](https://www.bilibili.com/video/BV1rRYk63ER5/)
+
+The demo also shows BidKing estimates and public-data filtering. Its native Imagine
+image wrapper is a separate local component, not installed by this package. Follow the
+[demo-to-source guide](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEMO_GUIDE.md)
+for the public examples and component boundaries.
+
 The original six workflows remain instruction/verification skills. Integrations live under
 `integrations/` so executable setup and runtime dependencies are not mislabeled as a simple Skill.
 

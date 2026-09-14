@@ -60,6 +60,11 @@ installation before moving it. Copying just the Skill cannot install this runtim
 
 ## 3. Reopen and verify actual behavior
 
+The provider/profile setup above supports bridge-created tasks. To select Grok directly
+with the native desktop model button, also prepare the [optional model router](MODEL_PICKER.md)
+before reopening. A catalog entry without provider pairing can still send Grok to the
+native OpenAI provider and fail.
+
 The host loads its model catalog when app-server starts. Passing a catalog only in
 `thread/start.config` was observed to leave unknown-model fallback metadata in use.
 Normally close/reopen the desktop after configuring; an already open model manager

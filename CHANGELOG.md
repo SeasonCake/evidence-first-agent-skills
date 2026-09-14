@@ -4,6 +4,13 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Publish the optional native model/provider router and Windows bootstrap source,
+  with idle-switch/policy controls, explicit setup and scoped compatibility evidence.
+- Preserve the catalog helper's single-model contract while supporting selected
+  multiple Grok rows; add Windows argument/stdio checks without model calls.
+- Link the bilingual BidKing/Grok demo and distinguish its separately installed
+  native image wrapper from the public desktop integration.
+
 - Add `grok-bridge` as a seventh Skill, with the full desktop integration separately
   under `integrations/`: explicit configuration, native-preserving startup catalog,
   persistent tasks, context/trace/permission inspection and finite native result return.

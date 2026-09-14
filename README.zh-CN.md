@@ -22,6 +22,17 @@
 
 原六项仍是指令/验证工作流，不把新集成的安装依赖强加给它们。
 
+新增可选的[原生模型按钮接入](integrations/grok-codex-bridge/MODEL_PICKER.md)：在创建任务及空闲切换时，
+将 Grok 模型与对应提供方配对。包含 stdio 路由器和 Windows 启动入口源码；认证、工具和历史仍由
+原版 Codex 后端处理。
+
+[68秒中文实录：BidKing 与 Codex 中的 Grok](https://www.bilibili.com/video/BV1rRYk63ER5/) ·
+[English on X](https://x.com/zheng_qili666/status/2099349396895019095)
+
+视频还展示竞价估值、结算复盘和公共数据筛选。生图使用单独安装的本地原生 Imagine 包装器，
+不随此公开集成分发。各段对应的源码与运行示例见
+[演示阅读路线](https://github.com/SeasonCake/bidking-inference/blob/main/docs/DEMO_GUIDE.zh-CN.md)。
+
 ## 简短问答，明确下一步
 
 ```text

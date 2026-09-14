@@ -34,3 +34,19 @@ jobs:
       - name: Verify portable bridge protocol and configuration fixtures without model calls
         working-directory: integrations/grok-codex-bridge
         run: python -B -m unittest discover -s tests -v
+
+  grok-windows-bootstrap:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Require the Windows compiler for this job
+        shell: powershell
+        run: |
+          $compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
+          if (-not (Test-Path -LiteralPath $compiler)) { throw 'Windows bootstrap compiler is missing.' }
+      - name: Verify native routing and compiled stdio bootstrap with synthetic fixtures
+        working-directory: integrations/grok-codex-bridge
+        run: python -B -m unittest tests.test_model_router tests.test_model_router_bootstrap -v

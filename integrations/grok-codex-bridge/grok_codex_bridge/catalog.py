@@ -42,29 +42,40 @@ def digest(value):
 
 
 def extend_native_catalog(native, routed, selected_model):
-    """Preserve every native field and append exactly one selected, namespaced row."""
+    """Preserve native fields and append the explicitly selected namespaced rows."""
     native_rows = models(native)
     routed_rows = models(routed)
-    if not selected_model.startswith('xai/grok-'):
+    selections = [selected_model] if isinstance(selected_model, str) else selected_model
+    if not isinstance(selections, list) or not selections:
+        raise ValueError('Choose a nonempty, unique Grok model selection')
+    if not all(isinstance(item, str) and item.startswith('xai/grok-') for item in selections):
         raise ValueError('Only an explicitly selected xai/grok model can be appended')
+    if len(set(selections)) != len(selections):
+        raise ValueError('Choose a nonempty, unique Grok model selection')
     if any('/' in row['slug'] for row in native_rows):
         raise ValueError('Native source already contains routed models; choose the native source')
-    matches = [row for row in routed_rows if row['slug'] == selected_model]
-    if len(matches) != 1:
-        raise ValueError('Selected Grok model is absent or ambiguous')
-    row = matches[0]
-    window, limit = row.get('context_window'), row.get('auto_compact_token_limit')
-    if (type(window) is not int or window <= 0 or type(limit) is not int
-            or not 0 < limit < window):
-        raise ValueError('Selected model needs valid context and compaction metadata')
     result = copy.deepcopy(native)
-    result['models'].append(copy.deepcopy(row))
+    selected_receipts = []
+    for selected in selections:
+        matches = [row for row in routed_rows if row['slug'] == selected]
+        if len(matches) != 1:
+            raise ValueError('Selected Grok model is absent or ambiguous')
+        row = matches[0]
+        window, limit = row.get('context_window'), row.get('auto_compact_token_limit')
+        if (type(window) is not int or window <= 0 or type(limit) is not int
+                or not 0 < limit < window):
+            raise ValueError('Selected model needs valid context and compaction metadata')
+        result['models'].append(copy.deepcopy(row))
+        selected_receipts.append({'selected_model': selected, 'selected_model_sha256': digest(row),
+                                  'context_window': window, 'auto_compact_token_limit': limit})
     # Do not copy the routed catalog's GPT rows, defaults, timestamps or prompts.
-    assert result['models'][:-1] == native_rows
+    assert result['models'][:len(native_rows)] == native_rows
     receipt = {'native_rows': len(native_rows), 'native_models_sha256': digest(native_rows),
-               'selected_model': selected_model, 'selected_model_sha256': digest(row),
-               'context_window': window, 'auto_compact_token_limit': limit,
                'native_rows_unchanged': True}
+    if isinstance(selected_model, str):
+        receipt.update(selected_receipts[0])  # Preserve the existing one-model contract.
+    else:
+        receipt.update(selected_models=list(selections), selected_rows=selected_receipts)
     return result, receipt
 
 

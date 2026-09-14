@@ -216,7 +216,8 @@ def integration_errors(root: Path) -> list[str]:
             errors.append(f'Private runtime tree in integration: {relative}')
         raw = path.read_bytes()
         actual[relative] = hashlib.sha256(raw).hexdigest()
-        if path.suffix not in allowed and path.name != 'LICENSE.opencodex':
+        if (path.suffix not in allowed and path.name != 'LICENSE.opencodex'
+                and relative != 'scripts/model_router_bootstrap.cs'):
             errors.append(f'Unreviewed integration file type: {relative}')
             continue
         try: text = raw.decode('utf-8-sig')

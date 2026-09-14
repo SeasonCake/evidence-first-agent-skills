@@ -34,6 +34,24 @@ class VerifyTest(unittest.TestCase):
     def test_repository_verifier_passes(self) -> None:
         subprocess.run([sys.executable, "scripts/verify.py"], cwd=ROOT, check=True)
 
+    def test_csharp_review_is_limited_to_the_bootstrap_source(self) -> None:
+        for relative, accepted in (("scripts/model_router_bootstrap.cs", True),
+                                   ("scripts/unreviewed.cs", False)):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = root / relative
+                source.parent.mkdir()
+                source.write_text("// synthetic source fixture\n", encoding="utf-8")
+                (root / "SOURCE_MANIFEST.json").write_text(json.dumps({
+                    "schema_version": 1,
+                    "files": {relative: hashlib.sha256(source.read_bytes()).hexdigest()},
+                }), encoding="utf-8")
+                errors = VERIFIER.integration_errors(root)
+                if accepted:
+                    self.assertEqual(errors, [])
+                else:
+                    self.assertEqual(errors, ["Unreviewed integration file type: " + relative])
+
     def test_synthetic_case_matrix_covers_every_skill(self) -> None:
         document = json.loads(
             (ROOT / "examples" / "synthetic_cases.json").read_text(encoding="utf-8")

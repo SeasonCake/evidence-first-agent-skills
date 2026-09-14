@@ -34,6 +34,19 @@ class CatalogTests(unittest.TestCase):
         for rows in [[], [self.grok], self.native['models'] * 2]:
             with self.assertRaises(ValueError):extend_native_catalog({'models': rows}, self.routed, 'xai/grok-test')
 
+    def test_multiple_selected_grok_rows_preserve_native_catalog(self):
+        second = dict(self.grok, slug='xai/grok-second')
+        routed = {'models': self.routed['models']+[second]}
+        merged, receipt = extend_native_catalog(self.native, routed, ['xai/grok-test', 'xai/grok-second'])
+        self.assertEqual(merged['models'][:1], self.native['models'])
+        self.assertEqual([r['slug'] for r in merged['models'][1:]], ['xai/grok-test', 'xai/grok-second'])
+        self.assertEqual(receipt['selected_models'], ['xai/grok-test', 'xai/grok-second'])
+        self.assertTrue(receipt['native_rows_unchanged'])
+
+    def test_empty_duplicate_and_mixed_multi_selection_rejected(self):
+        for selection in [[], ['xai/grok-test', 'xai/grok-test'], ['native-one'], ['xai/grok-missing']]:
+            with self.assertRaises(ValueError): extend_native_catalog(self.native, self.routed, selection)
+
     def test_missing_or_invalid_limits_fail_before_write(self):
         for window, limit in [(None, 450000), (True, 1), (500000, 500000), (500000, 0), (500000, False)]:
             routed = {'models': [dict(self.grok, context_window=window, auto_compact_token_limit=limit)]}

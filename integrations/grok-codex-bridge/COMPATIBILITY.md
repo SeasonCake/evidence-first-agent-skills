@@ -1,6 +1,6 @@
 # Scoped compatibility evidence
 
-Recorded 2026-09-13. These are results for the inspected local host, not promises about
+Recorded 2026-09-13; model-picker evidence added 2026-09-14. These are results for the inspected local host, not promises about
 every Codex/Grok version or a claim of supported native cross-provider Subagents parity.
 
 | Surface | Evidence | Limit |
@@ -13,12 +13,20 @@ every Codex/Grok version or a claim of supported native cross-provider Subagents
 | Manual compaction | Real compaction completed; afterwards the synthetic marker and an actual dynamic-tool call/result survived | The original production failure request was unavailable; no unique-cause claim |
 | Permission inspection | Exact-turn fields can be read without modifying settings | Factory parent binding does not automatically inherit parent permissions |
 | Offline checks | Portable Python protocol/configuration controls and optional installed-source Bun checks | Synthetic tests do not replace real provider/host acceptance |
+| Native model button | Local desktop 26.903.8094.0 / CLI 0.153.4: new Grok task, same-task GPT/Grok context recall and return to GPT, then actual UI controls after reopen | The router is opt-in; a host upgrade needs a launch/protocol check |
+| Older Grok menu entries | One basic no-tools chat each for 4.5 and 4.3 in the inspected local setup | Not full tool, context or model-quality acceptance; public setup starts with the selected row |
+| Windows bootstrap | Source-level quoting and stdio checks with synthetic local fixtures | Generated executables are not distributed or installed automatically |
 
 The initial compaction test waited for a legacy notification name and timed out after
 the host had already emitted a `contextCompaction` item. The corrected harness waited
 for that actual item plus terminal turn status before continuing. This was a test-event
 contract error, not evidence that the upstream compaction itself failed.
 
-Native Grok CLI media, a full desktop menu/Side chat redesign, automatic permission
+The single-row catalog result above describes the earlier setup; the later local model
+button control added three selected Grok rows while preserving the native rows. The
+public helper supports explicit multiple selections but does not auto-discover or enable
+every advertised model. See [model-picker setup](MODEL_PICKER.md).
+
+Native Grok CLI media, a Side chat redesign, automatic permission
 inheritance and account-level token savings are not certified by this package. The
 native observer has model/tool overhead; host token counters are not provider billing.

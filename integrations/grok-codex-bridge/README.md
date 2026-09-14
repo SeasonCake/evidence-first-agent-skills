@@ -12,6 +12,7 @@ companion Skill**, not an instruction-only Skill or native cross-provider Subage
 | `grok_codex_bridge/` | Create/reconcile persistent tasks, inspect history/permissions, refresh canonical instructions, observe one exact delegated turn |
 | `configure.py` | Dry-run or apply local provider/profile and an additive startup catalog; preserve native model rows and unrelated config |
 | `desktop.py` | Resolve the installed source and selected adapter root |
+| `grok_codex_bridge/model_router.py`, `scripts/` | Optional native model/provider pairing over stdio, with Windows bootstrap source |
 | `compat/` | Two narrowly scoped opencodex 2.51.0 source patches and upstream notice |
 | `tests/`, `tests-js/` | Offline protocol, identity, recovery, configuration and request-shape controls |
 | [Grok bridge Skill](../../skills/grok-bridge/SKILL.md) | Teach the installed workflow and conditional observer procedure |
@@ -29,6 +30,15 @@ Codex host and native parent/subagent tools remain external prerequisites.
 3. Normally reopen Codex so its model manager loads the startup catalog. Keep the
    selected proxy running through the documented upstream/local entry.
 4. Ask Codex to use `$grok-bridge` for an independent Grok task or explicit delegation.
+
+For direct selection using Codex's existing model button, follow the optional
+[model-picker setup](MODEL_PICKER.md). Adding a catalog row alone does not bind the
+right provider. Cross-provider changes require an idle task; active work is preserved.
+
+[English demo](https://x.com/zheng_qili666/status/2099349396895019095) ·
+[中文实录](https://www.bilibili.com/video/BV1rRYk63ER5/). The video includes a separately
+installed native Imagine wrapper; neither that wrapper nor a default media route is
+provided by this desktop package.
 
 No command here installs a model, logs in, copies authentication, enables global GPT
 proxying, changes permissions, edits Codex history, or starts a permanent watcher.

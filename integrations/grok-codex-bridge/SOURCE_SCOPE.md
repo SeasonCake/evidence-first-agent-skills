@@ -5,9 +5,18 @@ Original SeasonCake code, extracted from the local Grok/Codex integration resear
 the public configurator is independently added for explicit portable setup.
 File-level identities are recorded in `SOURCE_MANIFEST.json` after validation.
 
+September 14 adds the existing native model/provider router, its Python entry, Windows
+C# stdio bootstrap and synthetic routing tests. The catalog helper now accepts an
+explicit list of Grok rows while retaining its original single-model API. The public
+Windows bootstrap tests use a temporary argument-echo fixture, not installed account
+data or live model requests. No precompiled bootstrap is distributed.
+
 The local test that imports already installed native-CLI/interactive wrappers is not
 included: those wrappers and their machine-specific installation are outside this
 desktop package. No test has been relabeled as passing on an absent runtime.
+The later local media-navigation adapter embeds machine-specific Skill/wrapper assumptions
+and is also excluded. The public package does not claim to install native Imagine or
+reproduce that local media route merely by adding Grok to a menu.
 
 Excluded: account/authentication files, real prompts, model-catalog snapshots, session
 history/databases, personal binding ledgers, runtime logs, native observer receipts,
