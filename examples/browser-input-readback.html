@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Synthetic input readback fixture</title>
+<style>
+body{font:16px system-ui;max-width:540px;margin:24px auto;padding:0 20px;color:#17202a}
+label{display:block;margin:14px 0}input,textarea,button{font:inherit;padding:8px;box-sizing:border-box;width:100%;margin-top:4px}
+output{display:block;white-space:pre-wrap;margin-top:14px}small{color:#53616e}
+</style>
+<h1>Input readback fixture</h1>
+<p>Synthetic data only. No network submission or storage.</p>
+<form id="fixture" autocomplete="off">
+<label>Plain text<input id="plain" name="plain" value="sample-alpha" required></label>
+<label>Contact email<input id="contact" name="contact" type="email" value="sample@example.test" required></label>
+<label>Blank email<input id="blank" name="blank" type="email" required></label>
+<label>Notes<textarea id="notes" name="notes">sample notes</textarea></label>
+<button type="button" id="check">Check form locally</button>
+</form>
+<output id="result" aria-live="polite">No check yet</output>
+<small>The result reports validity and presence only; it never copies input values.</small>
+<script>
+document.getElementById('check').addEventListener('click', () => {
+  const rows = [...document.querySelectorAll('input,textarea')].map(el =>
+    `${el.labels[0].firstChild.textContent.trim()}: present=${el.value.length > 0}, valid=${el.validity.valid}`);
+  document.getElementById('result').textContent = rows.join('\n');
+});
+</script>
+</html>

@@ -54,9 +54,12 @@
 
 保存前核草稿、结果未知先查回执、错误导航不读成旧页面，保留指定浏览器和当前工具权限。
 CLI只是条件性选择，不强行替换现有会话。查看[工作流](skills/browser-workflow/SKILL.md)、
-[六个合成情境](skills/browser-workflow/references/synthetic-example.md)与
+[九个合成情境](skills/browser-workflow/references/synthetic-example.md)与
 [可选AGENTS入口示例](INSTALL.md#optional-standing-route)。
 技能可发现、情境检查和真实浏览器执行分别验证；不承诺原生焦点问题已修好或所有任务都更快。
+
+[浏览器读回与录屏恢复改进](docs/BROWSER_RECORDING_REVIEW_2026-09-15.zh-CN.md)附独立假数据表单、
+不可读字段处理和可选 FFmpeg 合成测试，说明为什么“读回为空”或“文件能播放”不足以判断任务结果。
 
 ## 安装与验证
 

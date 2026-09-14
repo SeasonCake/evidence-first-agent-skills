@@ -40,6 +40,9 @@ Identify each target by its stable business key, not a stale row number. For eac
 3. Read back the draft before saving. Unexpected text, duplicates or changed surrounding
    content are a reason to stop that item's save and determine ownership, not to overwrite
    the whole form. Continue independent items only when their state is unambiguous.
+   A missing/blank extracted value may be unavailable or filtered, not an empty input.
+   When evidence conflicts, read [input readback](references/input-readback.md) before
+   retyping. Preserve unknown fields in the transaction record; do not coerce them to `""`.
 4. Save once, observe an explicit settled state, then obtain a fresh persisted readback
    where available. Judge readiness from the target's identity, loaded fields and usable
    controls, not a title alone. A missing toast is not proof of failure; a toast or zero
@@ -63,6 +66,9 @@ An irreversible action still needs the authority required by the active provider
   CSS selectors are different representations—confirm the actual one before use.
 - Inspect the actual rendered surface when layout or visible copy matters. A DOM read,
   HTTP response or hidden render does not prove visible correctness.
+- When recording an authorized browser demonstration, read
+  [recording and process recovery](references/recording.md). Preserve the selected framing
+  and distinguish a stopped encoder, a reaped process and a verified media file.
 - For read-heavy multi-page tasks, reuse navigation/extraction only after confirming
   the page family. Keep source identity, required facts and completeness in the result
   table; a login shell, collapsed post or stale previous page is not retrieved content.

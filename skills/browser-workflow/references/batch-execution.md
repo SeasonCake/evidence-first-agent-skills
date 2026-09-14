@@ -78,10 +78,13 @@ another save. Keep intended delta and baseline available without overwriting the
 | Mixed old/new values, another version or changed surrounding data | Conflict/partial state. Return the differences; do not replay or overwrite the full item. |
 | Input contains unexpected or unrelated text | Do not save that item; preserve the input and inspect ownership. Independent items may continue if their state is unambiguous. |
 | Wrong identity, loading page, denied access or failed extraction | Preserve the exact category and last known step. Do not report success or change channels to evade a denial. |
+| Required input value is missing, filtered or contradicts the rendered field | Mark the field unavailable and keep outcome unknown. Follow [input readback](input-readback.md); do not retype from an empty placeholder. |
 
 If an item was already in the desired state before submission, record it as unchanged;
 do not invent a save. `judgeReadback` requires an adapter-supplied authoritative/settled
 classification; the helper cannot prove those flags or inspect a hidden backend itself.
+Adapters also preserve `unavailableFields` on each baseline/draft/readback; missing or
+explicitly unavailable required values stay unknown even on a settled authoritative view.
 It returns a narrow decision, never a retry loop. A second unsuccessful save ends the
 automatic repair attempt; expose what is known and the recovery point.
 

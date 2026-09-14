@@ -32,6 +32,33 @@ test('unchanged baseline after settled save differs from partial state', () => {
 test('already desired state does not invent a save', () => {
   assert.equal(kit.judgeReadback(plan,desired,desired,settled).outcome,'unchanged');
 });
+
+test('unavailable readback never becomes not-saved or verified, even with a scalar placeholder', () => {
+  const masked = {...before, fields:{...before.fields, title:''}, unavailableFields:['title']};
+  const maskedBaseline = {...before, fields:{...before.fields, title:''}};
+  assert.equal(kit.judgeReadback(plan, maskedBaseline, masked, settled).outcome, 'unknown');
+  assert.equal(kit.judgeReadback(plan, before, {...desired, unavailableFields:['quantity']}, settled).outcome, 'unknown');
+  assert.equal(kit.checkDraft(plan, before, {...desired, unavailableFields:['price']}).outcome, 'unknown');
+});
+
+test('missing fields remain unknown; an observed empty string is still a real value', () => {
+  const blankPlan = kit.prepareBatch({}, [{key:'a', owned:{title:'new'}, requirementRevision:'a'}])[0];
+  const blank = {key:'a', fields:{title:''}};
+  assert.equal(kit.judgeReadback(blankPlan, blank, blank, settled).outcome, 'not-saved');
+  assert.equal(kit.judgeReadback(blankPlan, blank, {key:'a',fields:{}}, settled).outcome, 'unknown');
+  assert.equal(kit.checkDraft(blankPlan, blank, {key:'a',fields:{}}).outcome, 'unknown');
+  assert.equal(kit.judgeReadback(blankPlan, {...blank,unavailableFields:['title']},
+    {key:'a',fields:{title:'new'}}, settled).outcome, 'unknown');
+});
+
+test('an explicit empty target can verify, but an unavailable placeholder cannot', () => {
+  const blankPlan = kit.prepareBatch({}, [{key:'a', owned:{title:''}, requirementRevision:'a'}])[0];
+  const previous = {key:'a',fields:{title:'old'}};
+  const blank = {key:'a',fields:{title:''}};
+  assert.equal(kit.judgeReadback(blankPlan, previous, blank, settled).outcome, 'verified');
+  assert.equal(kit.judgeReadback(blankPlan, previous, {...blank,unavailableFields:['title']}, settled).outcome, 'unknown');
+  assert.throws(() => kit.checkDraft(blankPlan, previous, {...blank,unavailableFields:'title'}), TypeError);
+});
 test('non-JSON field maps and conflicting ownership are rejected', () => {
   assert.throws(()=>kit.prepareBatch(new Date(),[{key:'a',owned:{title:'x'},requirementRevision:'a'}]),TypeError);
   assert.throws(()=>kit.prepareBatch({},[{key:'a',owned:{title:'x'},protected:{title:'y'},requirementRevision:'a'}]));

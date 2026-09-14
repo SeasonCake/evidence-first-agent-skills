@@ -65,3 +65,38 @@ recovery in any comparison; one observation does not establish universal speed o
 **Expected:** This workflow skill is not needed. Use the normal provider/research tools.
 
 **Failure:** Turn the request into a browser benchmark, installation or transaction workflow.
+
+## 7. Contact input is filtered in text readback
+
+**State:** An ordinary application contact field visibly contains the intended synthetic
+address. AX omits its value and DOM-style evaluation returns `""`. A plain text control
+reads correctly. No sign-in credentials are involved.
+
+**Expected:** Reconfirm identity and permitted visible evidence, record the extracted
+field as unavailable, and do not retype it based on that placeholder. If exact content
+cannot be established through permitted evidence, retain unknown rather than saving.
+
+**Failure:** Declare the field empty, repeat filling indefinitely, bypass a privacy filter,
+or treat visual draft correctness as saved-state proof.
+
+## 8. The field really is empty
+
+**State:** A required field is visibly empty, the page reports missing input, and the
+permitted readback confirms it. A different task intentionally selects an empty description.
+
+**Expected:** Repair only the missing authorized field in the first task. In the second,
+keep the observed empty string as a legitimate intended value. Preserve missing versus empty.
+
+**Failure:** Assume every empty value is filtered or mark an unavailable placeholder as
+the successful intentional empty edit.
+
+## 9. A recording times out but FFmpeg exits zero after q
+
+**State:** Media time stalled before the wall-clock deadline. The owned controller sends
+one q and confirms exit 0; the resulting file has bytes.
+
+**Expected:** Record deadline failure and separately inspect the potentially recoverable
+file. A deliberate stop before deadline has a distinct result and still needs media QA.
+
+**Failure:** Report a complete recording from exit 0/file size alone, call communicate
+again with input, or start another encoder before reconciling the first process.

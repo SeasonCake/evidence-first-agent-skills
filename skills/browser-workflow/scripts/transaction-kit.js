@@ -45,10 +45,22 @@ function createBrowserWorkflowKit() {
     }
     return found;
   }
+  function unreadable(snapshot, expected, area) {
+    const unavailable = snapshot?.unavailableFields ?? [];
+    if (!Array.isArray(unavailable) || unavailable.some(x => typeof x !== 'string')) {
+      throw new TypeError('unavailableFields must be an array of field names');
+    }
+    return Object.keys(expected).filter(field => unavailable.includes(field) ||
+      !snapshot?.fields || !own(snapshot.fields, field))
+      .map(field => ({ field, reason: unavailable.includes(field) ? 'unavailable' : 'missing', area }));
+  }
   function checkDraft(plan, baseline, draft) {
     if (baseline?.key !== plan.key || draft?.key !== plan.key) {
       return { ok: false, outcome: 'wrong-identity', differences: [] };
     }
+    const unknown = [...unreadable(baseline, plan.protected, 'baseline-protected'),
+      ...unreadable(draft, plan.owned, 'owned'), ...unreadable(draft, plan.protected, 'draft-protected')];
+    if (unknown.length) return { ok: false, outcome: 'unknown', next: 'read-only-check', differences: unknown };
     const before = differences(plan.protected, baseline.fields);
     const delta = differences(plan.owned, draft.fields);
     const surrounding = differences(plan.protected, draft.fields);
@@ -64,6 +76,10 @@ function createBrowserWorkflowKit() {
     if (status?.authoritative !== true || status?.settled !== true) {
       return { outcome: 'unknown', next: 'read-only-check', differences: [] };
     }
+    const unknown = [...unreadable(baseline, plan.owned, 'baseline-owned'),
+      ...unreadable(baseline, plan.protected, 'baseline-protected'),
+      ...unreadable(readback, plan.owned, 'owned'), ...unreadable(readback, plan.protected, 'readback-protected')];
+    if (unknown.length) return { outcome: 'unknown', next: 'read-only-check', differences: unknown };
     const protectedBefore = differences(plan.protected, baseline.fields);
     const protectedAfter = differences(plan.protected, readback.fields);
     const delta = differences(plan.owned, readback.fields);
@@ -78,9 +94,6 @@ function createBrowserWorkflowKit() {
     }
     const baselineOwned = {};
     for (const field of Object.keys(plan.owned)) {
-      if (!baseline.fields || !own(baseline.fields, field)) {
-        return { outcome: 'unknown', next: 'inspect-baseline', differences: [{ field, reason: 'missing-baseline' }] };
-      }
       baselineOwned[field] = baseline.fields[field];
     }
     const identicalToBaseline = differences(baselineOwned, readback.fields).length === 0;

@@ -90,11 +90,15 @@ Keep prices unchanged and verify the saved results before moving on.
 The workflow covers draft verification, uncertain save outcomes, stale pages and compact
 evidence. It preserves the chosen browser and current provider permissions; CLI use is
 conditional, not a forced replacement. See the [workflow](skills/browser-workflow/SKILL.md),
-[six synthetic cases](skills/browser-workflow/references/synthetic-example.md), and the
+[nine synthetic cases](skills/browser-workflow/references/synthetic-example.md), and the
 [optional AGENTS routing example](INSTALL.md#optional-standing-route).
 
 Skill discovery, a scenario review and real browser execution are different checks.
 This skill does not promise a native focus fix or universal speed improvement.
+
+The [input-readback and recording recovery review](docs/BROWSER_RECORDING_REVIEW_2026-09-15.md)
+includes an isolated browser fixture, unavailable-value handling, and optional synthetic
+FFmpeg checks. It explains why a blank extraction or a playable file can be misleading.
 
 ## Hotfix1 engineering case study
 

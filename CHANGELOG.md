@@ -4,6 +4,11 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Distinguish unavailable/filtered browser input values from actual empty fields;
+  keep missing readbacks unknown in the transaction helper and add synthetic UI controls.
+- Add bounded recording-process recovery with separate deadline/requested-stop results,
+  real child-process regressions and a browser/recording investigation report.
+  [Evidence and reproduction](docs/BROWSER_RECORDING_REVIEW_2026-09-15.md)
 - Publish the optional native model/provider router and Windows bootstrap source,
   with idle-switch/policy controls, explicit setup and scoped compatibility evidence.
 - Preserve the catalog helper's single-model contract while supporting selected
