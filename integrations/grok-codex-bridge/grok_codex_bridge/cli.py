@@ -8,8 +8,8 @@ import sys
 from .factory import MetadataAppServer, create_task, load_selection, reconcile_task, task_spec
 from .registry import Registry
 from .trace import ReadOnlyAppServer, read_trace
-from .context import instruction_context, public_context, context_prompt, shared_user_instruction_paths
-from .completion import observe, saved_result, save_result, validate_binding
+from .context import instruction_context, public_context, context_prompt, shared_user_instruction_paths, TASK_ROLES
+from .completion import observe, saved_result, save_result, validate_binding, completion_notice, receive_result
 from .permissions import inspect_permissions
 
 
@@ -29,6 +29,7 @@ def main():
     context.add_argument('--cwd', required=True)
     context.add_argument('--workspace-root', help='Explicit instruction ancestor boundary; use the selected workspace, not the installation directory')
     context.add_argument('--doc', action='append', default=[], help='Additional selected current document, repeatable')
+    context.add_argument('--role', choices=TASK_ROLES, help='Current selected assignment role; never changes permissions')
     context.add_argument('--thread-id', help='Also verify the existing task uses this exact cwd')
     context.add_argument('--include-content', action='store_true')
     context.add_argument('--prompt', action='store_true', help='Emit refreshed file content for a native app handoff')
@@ -54,16 +55,27 @@ def main():
     repair = commands.add_parser('reconcile', help='Recover an uncertain creation; never create another task')
     repair.add_argument('--request-key', required=True)
     repair.add_argument('--thread-id')
-    observer = commands.add_parser('observe', help='Read one delegated turn for a native parent completion observer')
+    observer = commands.add_parser('observe', help='Collect one delegated turn; caller owns waiting and notification')
     observer.add_argument('--thread-id', required=True)
     observer.add_argument('--turn-id', required=True)
     observer.add_argument('--parent-id', required=True)
     observer.add_argument('--deadline', type=int, default=600)
+    receiver = commands.add_parser('receive', help='Read and verify the exact completion receipt without rewriting its payload')
+    receiver.add_argument('--thread-id', required=True)
+    receiver.add_argument('--turn-id', required=True)
+    receiver.add_argument('--parent-id', required=True)
+    receiver.add_argument('--receipt', required=True)
+    receiver.add_argument('--receipt-sha256', required=True)
     permissions = commands.add_parser('permissions', help='Inspect exact-turn permission evidence without changing settings')
     permissions.add_argument('--thread-id', required=True)
     permissions.add_argument('--turn-id', required=True)
     args = parser.parse_args()
     root = Path(args.adapter_root)
+    if args.command == 'receive':
+        result = receive_result(root / 'runtime/completion-results', args.receipt,
+                                args.thread_id, args.turn_id, args.parent_id, args.receipt_sha256)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return
     if args.command == 'permissions':
         binary = args.codex_binary or json.loads((root / 'desktop-settings.json').read_text(encoding='utf-8'))['codex_binary']
         with ReadOnlyAppServer(binary, Path.cwd()) as client:
@@ -72,7 +84,8 @@ def main():
         return
     if args.command == 'context':
         # This operation must not open/create the separate task-binding ledger.
-        context_options = {'global_instructions': shared_user_instruction_paths(args.codex_home)}
+        context_options = {'global_instructions': shared_user_instruction_paths(args.codex_home),
+                           'task_role': args.role}
         if args.workspace_root:
             context_options['workspace_root'] = args.workspace_root
         current = instruction_context(args.cwd, args.doc, **context_options)
@@ -111,6 +124,7 @@ def main():
                         result = observe(client, record, args.thread_id, args.turn_id,
                                          args.parent_id, args.deadline)
                     result = save_result(output_root, result)
+                result = completion_notice(result)
             elif args.command == 'children':
                 selection = load_selection(root, args.codex_home)
                 with ReadOnlyAppServer(binary, Path.cwd()) as client:

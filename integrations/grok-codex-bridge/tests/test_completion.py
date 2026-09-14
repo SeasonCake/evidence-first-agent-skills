@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -7,6 +8,7 @@ from unittest.mock import Mock
 
 from grok_codex_bridge.completion import (
     DeadlineClient, observe, parent_dispatched, save_result, saved_result, validate_binding,
+    completion_notice, receive_result, MAX_RESULT_BYTES,
 )
 from grok_codex_bridge.trace import RpcError
 
@@ -193,6 +195,125 @@ class CompletionTests(unittest.TestCase):
         self.assertEqual(result["result_message"]["content"]["characters"], 13000)
         self.assertEqual(len(result["result_message"]["content"]["text"]), 12000)
         self.assertEqual(result["result_message"]["id"], "message-001")
+
+    def roundtrip(self, result=None):
+        saved = save_result(self.root, result or self.run_observer(self.client()))
+        notice = completion_notice(saved)
+        received = receive_result(self.root, notice['receipt_path'], THREAD, TURN, PARENT,
+                                  notice['receipt_sha256'])
+        return saved, notice, received
+
+    def test_notice_has_no_rewritten_business_payload_or_delivery_claim(self):
+        saved, notice, received = self.roundtrip()
+        self.assertIsNone(saved['notification_route'])
+        self.assertFalse(saved['notification_emitted_by_collector'])
+        self.assertNotIn('answer', json.dumps(notice))
+        self.assertFalse(notice['payload_in_notice'])
+        self.assertEqual(received['result_text'], '{"answer": 95}')
+        self.assertTrue(received['receipt_integrity_verified'])
+        self.assertTrue(received['payload_complete'])
+        self.assertFalse(received['delivery_verified'])
+        self.assertFalse(received['business_success_inferred'])
+
+    def test_full_json_facts_and_limits_survive_long_unicode_payload(self):
+        body = json.dumps({'runs': [{'id': 'r1', 'reason': '原因' * 6500,
+                                   'next_action': 'verify original inputs'}],
+                           'limits': ['not a visual check'], 'subscription_cost': None}, ensure_ascii=False)
+        message = copy.deepcopy(self.message)
+        message['item']['text'] = body
+        saved, notice, received = self.roundtrip(self.run_observer(self.client(entries=[self.envelope, message])))
+        self.assertTrue(saved['result_message']['content']['truncated'])
+        self.assertEqual(received['result_text'], body)
+        self.assertEqual(json.loads(received['result_text'])['limits'], ['not a visual check'])
+        self.assertLess(len(json.dumps(notice)), 1800)
+
+    def test_oversized_payload_remains_attention_not_false_complete(self):
+        message = copy.deepcopy(self.message)
+        message['item']['text'] = 'x' * (MAX_RESULT_BYTES + 1)
+        saved, _, received = self.roundtrip(self.run_observer(self.client(entries=[self.envelope, message])))
+        self.assertTrue(saved['needs_attention'])
+        self.assertIsNone(saved['result_message']['full_text'])
+        self.assertFalse(received['payload_complete'])
+        self.assertIsNone(received['result_text'])
+        self.assertTrue(received['needs_attention'])
+
+    def test_readback_rejects_wrong_parent_turn_and_file_hash(self):
+        _, notice, _ = self.roundtrip()
+        for parent, turn, digest in [("wrong-parent", TURN, notice['receipt_sha256']),
+                                     (PARENT, 'wrong-turn-002', notice['receipt_sha256']),
+                                     (PARENT, TURN, '0' * 64)]:
+            with self.assertRaises(ValueError):
+                receive_result(self.root, notice['receipt_path'], THREAD, turn, parent, digest)
+
+    def test_rewritten_payload_fails_its_original_message_hash(self):
+        saved, notice, _ = self.roundtrip()
+        path = Path(notice['receipt_path'])
+        changed = json.loads(path.read_text('utf-8'))
+        changed['result_message']['full_text'] = '{"answer": 96}'
+        path.write_text(json.dumps(changed), encoding='utf-8')
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, 'message hash'):
+            receive_result(self.root, path, THREAD, TURN, PARENT, digest)
+
+    def test_legacy_receipt_read_does_not_rewrite_history_or_trust_old_route(self):
+        result = self.run_observer(self.client())
+        result['schema'] = 'grok-completion/v1'
+        result['notification_route'] = 'native Codex observer final, not MCP send'
+        result['result_message'].pop('full_text')
+        result['result_message'].pop('payload_complete')
+        saved, notice, received = self.roundtrip(result)
+        before = Path(notice['receipt_path']).read_bytes()
+        again = receive_result(self.root, notice['receipt_path'], THREAD, TURN, PARENT, notice['receipt_sha256'])
+        self.assertEqual(before, Path(notice['receipt_path']).read_bytes())
+        self.assertEqual(received, again)
+        self.assertEqual(received['result_text'], '{"answer": 95}')
+        self.assertNotIn('notification_route', received)
+        self.assertFalse(received['delivery_verified'])
+
+    def test_clipped_legacy_receipt_and_unverified_dispatch_do_not_pass(self):
+        result = self.run_observer(self.client())
+        result['schema'] = 'grok-completion/v1'
+        result['result_message'].pop('full_text')
+        result['result_message']['content']['truncated'] = True
+        _, notice, received = self.roundtrip(result)
+        self.assertFalse(received['payload_complete'])
+        data = json.loads(Path(notice['receipt_path']).read_text('utf-8'))
+        data['parent_dispatch_verified'] = False
+        Path(notice['receipt_path']).write_text(json.dumps(data), encoding='utf-8')
+        digest = hashlib.sha256(Path(notice['receipt_path']).read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, 'parent dispatch'):
+            receive_result(self.root, notice['receipt_path'], THREAD, TURN, PARENT, digest)
+
+    def test_timeout_receipt_can_be_received_without_poisoning_final_result(self):
+        result = self.run_observer(self.client([('inProgress', None)]), 4)
+        _, notice, received = self.roundtrip(result)
+        self.assertIn('.attempt-', notice['receipt_path'])
+        self.assertEqual(received['attention_reason'], 'observation_timeout')
+        self.assertTrue(received['needs_attention'])
+        self.assertIsNone(saved_result(self.root, THREAD, TURN, PARENT))
+
+    def test_rpc_timeout_at_deadline_differs_from_early_transport_timeout(self):
+        for exhausted in (False, True):
+            self.elapsed = 0
+            client = self.client()
+            def expire(method, params):
+                if exhausted:
+                    self.elapsed = 20
+                raise TimeoutError('synthetic RPC wait')
+            client.call.side_effect = expire
+            result = self.run_observer(client)
+            self.assertEqual(result['status'], 'observation_timeout' if exhausted else 'observer_error')
+            self.assertFalse(result['business_success_inferred'])
+
+    def test_legacy_clipped_notice_cannot_hide_the_payload_unknown(self):
+        result = self.run_observer(self.client())
+        result['schema'] = 'grok-completion/v1'
+        result['needs_attention'] = False
+        result['result_message'].pop('full_text')
+        result['result_message']['content']['truncated'] = True
+        _, notice, _ = self.roundtrip(result)
+        self.assertTrue(notice['needs_attention'])
+        self.assertFalse(notice['payload_complete'])
 
 
 if __name__ == "__main__":

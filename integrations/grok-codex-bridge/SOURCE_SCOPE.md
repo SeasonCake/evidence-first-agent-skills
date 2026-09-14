@@ -22,6 +22,12 @@ Excluded: account/authentication files, real prompts, model-catalog snapshots, s
 history/databases, personal binding ledgers, runtime logs, native observer receipts,
 proprietary Codex/Grok binaries, old private baseline copies and unrelated product code.
 
-The two opencodex modifications retain their separate MIT notice. They preserve the
+September 15 adds parent-owned waiting, compact notices plus verified original-result
+readback, and explicit context roles without dropping common rules. Synthetic controls
+cover long Unicode results, legacy/clipped receipts, wrong identities/hashes, and changed
+role/rule context. The xAI custom-tool history patch targets the published no-tools
+baseline; its deterministic helper is shared with the locally tested repair.
+
+The three opencodex modifications retain their separate MIT notice. They preserve the
 upstream baseline identities documented in [SETUP.md](SETUP.md); they are source patches,
 not a vendored proxy distribution or a change to native GPT request routing.

@@ -142,13 +142,18 @@ class FactoryTests(unittest.TestCase):
         self.assertEqual(result['completionReturn']['parentThreadId'], 'parent-task-id')
         self.assertTrue(result['completionReturn']['requiresExactDispatchedTurn'])
         self.assertFalse(result['completionReturn']['activeObserverCreatedByFactory'])
-        self.assertEqual(result['completionReturn']['observerSpawnParameters'],
-                         {'model': 'gpt-5.6-luna', 'reasoning_effort': 'high', 'fork_turns': 'none'})
+        self.assertEqual(result['completionReturn']['mode'], 'parentBoundedWait')
+        self.assertEqual(result['completionReturn']['readbackOperation'], 'receive')
+        self.assertFalse(result['completionReturn']['activeWaitCreatedByFactory'])
+        self.assertTrue(result['completionReturn']['alternateObserver']['requiresSelectedSupportedLifecycle'])
+        self.assertNotIn('observerSpawnParameters', result['completionReturn'])
         self.assertNotIn('observerSpawnParameters', result['binding']['spec'])
         params = client.call.call_args_list[1].args[1]
         self.assertEqual(params['model'], 'xai/grok-4.6')
         self.assertNotIn('parentThreadId', params)
         self.assertIn('parent-task-id', params['developerInstructions'])
+        self.assertIn('parent owns waiting and collection', params['developerInstructions'])
+        self.assertIn('initial role is the assigned worker', params['developerInstructions'])
 
     def test_invalid_parent_creates_no_binding_or_task(self):
         spec = task_spec('delegate', str(self.root), self.selection, 'parent-task-id')

@@ -26,6 +26,10 @@ explicit setup/recovery, source compatibility patches and synthetic tests. Its c
 Skill teaches usage; copying that Skill alone does not install the runtime or a provider.
 Native GPT routing stays separate, and exact host limitations remain documented.
 
+The [September 15 reliability review](docs/GROK_RELIABILITY_REVIEW_2026-09-15.md) covers
+original-result return, parent/worker context, read-only versus Full access controls,
+and a reproduced manual-compact repair with its actual recovery evidence.
+
 The optional [native model-picker route](integrations/grok-codex-bridge/MODEL_PICKER.md)
 pairs Grok selections with their provider, including idle GPT/Grok switches. It includes
 the stdio router and Windows bootstrap source; the original Codex backend still handles

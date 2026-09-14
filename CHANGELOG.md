@@ -4,6 +4,10 @@ This project follows Semantic Versioning. Dates use `YYYY-MM-DD`.
 
 ## [Unreleased]
 
+- Add parent-owned bounded waits and verified original Grok result readback, retaining
+  complete JSON separately from compact notices and keeping legacy clipped data unknown.
+- Separate worker/parent context procedures and add an xAI custom-tool history patch
+  for the missing-item-ID compact failure, with scoped live recovery and offline controls.
 - Distinguish unavailable/filtered browser input values from actual empty fields;
   keep missing readbacks unknown in the transaction helper and add synthetic UI controls.
 - Add bounded recording-process recovery with separate deadline/requested-stop results,

@@ -1,7 +1,7 @@
 # Grok ↔ Codex desktop integration
 
-Keep Grok work in a persistent, directly editable Codex task, with bounded history reads
-and a finite native completion observer that returns delegated work to its parent.
+Keep Grok work in a persistent, directly editable Codex task, with bounded history reads,
+parent-owned waiting and exact original-result readback for delegated work.
 Native GPT requests keep their own provider. This is an **integration project with a
 companion Skill**, not an instruction-only Skill or native cross-provider Subagents parity.
 
@@ -9,13 +9,13 @@ companion Skill**, not an instruction-only Skill or native cross-provider Subage
 
 | Component | What it does |
 | --- | --- |
-| `grok_codex_bridge/` | Create/reconcile persistent tasks, inspect history/permissions, refresh canonical instructions, observe one exact delegated turn |
+| `grok_codex_bridge/` | Create/reconcile tasks, inspect history/permissions, refresh instructions for the selected role, collect and verify an exact delegated result |
 | `configure.py` | Dry-run or apply local provider/profile and an additive startup catalog; preserve native model rows and unrelated config |
 | `desktop.py` | Resolve the installed source and selected adapter root |
 | `grok_codex_bridge/model_router.py`, `scripts/` | Optional native model/provider pairing over stdio, with Windows bootstrap source |
-| `compat/` | Two narrowly scoped opencodex 2.51.0 source patches and upstream notice |
+| `compat/` | Three narrowly scoped opencodex 2.51.0 source patches and upstream notice |
 | `tests/`, `tests-js/` | Offline protocol, identity, recovery, configuration and request-shape controls |
-| [Grok bridge Skill](../../skills/grok-bridge/SKILL.md) | Teach the installed workflow and conditional observer procedure |
+| [Grok bridge Skill](../../skills/grok-bridge/SKILL.md) | Separate worker procedures from parent waiting, original receipt and conditional observer responsibilities |
 
 The native Grok CLI/media wrappers, proprietary binaries, account credentials, model
 catalog snapshots and personal runtime records are not bundled. Use the official native
@@ -43,7 +43,10 @@ provided by this desktop package.
 No command here installs a model, logs in, copies authentication, enables global GPT
 proxying, changes permissions, edits Codex history, or starts a permanent watcher.
 The CLI factory performs one real initialization turn; subsequent input belongs to the
-native app. A ready binding alone does not arm the completion observer.
+native app. A ready binding alone starts neither a wait nor an observer. The current
+`observe` command prints a compact notice; use `receive` with its receipt hash to read
+the unchanged result. Old complete V1 receipts remain readable; old clipped payloads
+remain unknown. See [completion return](../../skills/grok-bridge/references/native-observer.md).
 
 ## Verification
 
@@ -51,7 +54,7 @@ Python 3.11+ from this directory:
 
 ```text
 python -B -m unittest discover -s tests
-python desktop.py --adapter-root YOUR_ADAPTER_ROOT context --cwd PROJECT --workspace-root WORKSPACE --doc README.md
+python desktop.py --adapter-root YOUR_ADAPTER_ROOT context --cwd PROJECT --workspace-root WORKSPACE --role worker --doc README.md
 ```
 
 The tests use synthetic local fixtures and no model calls. Set `GROK_BRIDGE_OCX_ROOT` to

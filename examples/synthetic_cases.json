@@ -26,8 +26,8 @@
       "known_fail": "An old test-signing note becomes a release requirement, or an unanswered preselected option is recorded as user consent."
     },
     "grok-bridge": {
-      "known_good": "One ready synthetic child/turn/parent binding, one finite observer, same-handle continuation and actual native receipt at the parent.",
-      "known_fail": "A returned ID or catalog file is treated as readiness/runtime proof, or a yielded collector is aborted and mislabeled timeout."
+      "known_good": "One ready synthetic child/turn/parent binding, a parent-owned bounded wait, same-handle continuation and verified original result readback; the worker stays in its assigned role.",
+      "known_fail": "A returned ID is treated as an armed wait, a clipped or rewritten result is called complete, receipt data changes the worker role, or a yielded collector is aborted and mislabeled timeout."
     }
   }
 }

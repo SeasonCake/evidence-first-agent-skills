@@ -7,7 +7,7 @@ this repository, run a broad configuration sync or migrate existing histories.
 
 ## 1. Inspect the compatibility inputs
 
-The two patches target separate source files in opencodex 2.51.0:
+The numeric and no-tools patches target these opencodex 2.51.0 source files:
 
 | File | Before SHA-256 | Patched SHA-256 |
 | --- | --- | --- |
@@ -28,6 +28,22 @@ The numeric patch repairs only known tool/field representations; it preserves in
 fractions, unrelated tools and permissions. The request patch removes redundant auto/none
 selectors only when no tools exist at the exact xAI destination. Required/explicit tool
 selection is not relaxed into successful prose.
+
+The third patch, `compat/opencodex-2.51.0-custom-tool-history.patch`, applies **after**
+the no-tools patch. It changes the adapter from SHA-256
+`603a67c1a68133e4259df5a74c611c3aef19c119bc28327b35cee64863f28ac4` to
+`712deb7ee15a4912d7fbca73506ffada1ff7dcde67fff404bd59ea9fefddb320` and adds
+`src/adapters/xai-custom-tool-history.ts`. It supplies missing xAI custom-call item IDs
+after generic `store:false` sanitization, preserving call/output pairing and all tool
+input. A real manual compact had rejected that missing field with 422.
+
+Apply/check it against the reviewed source just like the earlier patches, preserve the
+original, and reload the owned source process. This public patch is based on the public
+no-tools baseline; it does not require the separately excluded local media-navigation
+extension. If your source includes other changes, inspect them and construct an equivalent
+delta instead of forcing this patch. Optional installed-source tests default to the
+final public adapter hash; `GROK_BRIDGE_EXPECT_ADAPTER_SHA256` may identify another exact,
+independently reviewed extension build, not a hash derived merely to make the test pass.
 
 ## 2. Prepare the local configuration
 
@@ -87,7 +103,7 @@ discovery of every future model while a custom startup catalog is selected.
   task to hide a partial first operation.
 - Ordinary follow-up: retain the task ID and use native app input. Do not open a competing
   CLI resume writer or change permissions to bypass a pending request.
-- Observer uncertainty: retain exact task/turn/parent and collector handle/receipt;
+- Wait/observer uncertainty: retain exact task/turn/parent and collector handle/receipt;
   a yielded command is still running, and a helper receipt is not proof of parent delivery.
 - Configuration rollback: inspect the current config and selected backup, then restore
   only the owned catalog pointer/provider changes without removing later unrelated edits.

@@ -1,4 +1,4 @@
-"""Read one delegated Grok turn; native observer completion delivers to its parent.
+"""Collect one delegated Grok turn; its caller owns waiting and actual delivery.
 
 No send, resume, turn start, permission change or Codex history/database write.
 Only a compact result in the bridge's private operational directory is written.
@@ -19,6 +19,8 @@ from .trace import RpcError, clip, read_thread_metadata
 MAX_PAGES = 4
 PAGE_SIZE = 50
 RESULT_CHARS = 12000
+MAX_RESULT_BYTES = 128 * 1024
+MAX_RECEIPT_BYTES = 512 * 1024
 ID = re.compile(r"[A-Za-z0-9_-]{8,100}")
 TERMINAL = {"completed", "failed", "interrupted"}
 
@@ -96,9 +98,11 @@ def observe(client, record, thread_id, turn_id, parent_id, deadline=600,
     if not ID.fullmatch(turn_id) or not 1 <= deadline <= 1800:
         raise ValueError("Exact turn ID and a 1–1800 second observation window are required")
     result = {
-        "schema": "grok-completion/v1", "thread_id": thread_id, "turn_id": turn_id,
+        "schema": "grok-completion/v2", "thread_id": thread_id, "turn_id": turn_id,
         "parent_id": parent_id, "status": "observing", "business_success_inferred": False,
-        "notification_route": "native Codex observer final, not MCP send",
+        "collection_route": "read-only exact-turn RPC",
+        "notification_route": None, "notification_emitted_by_collector": False,
+        "wait_and_notification_owner": "caller; not established by this collector",
         "modelRequestsStarted": 0, "approval_actions": 0, "history_writes": 0,
     }
     end = clock() + deadline
@@ -143,13 +147,17 @@ def observe(client, record, thread_id, turn_id, parent_id, deadline=600,
                                 and isinstance(entry["item"].get("text"), str)
                                 and entry["item"]["text"].strip()]
                     latest = messages[0] if messages else None
+                    body = None if latest is None else latest["text"]
+                    body_fits = body is not None and len(body.encode('utf-8')) <= MAX_RESULT_BYTES
                     result.update(status=status if latest or status != "completed"
                                   else "completed_without_message",
                                   completed_at=turn["completedAt"],
                                   result_message=None if latest is None else {
                                       "id": latest.get("id"),
                                       "content": clip(latest["text"], RESULT_CHARS),
-                                      "sha256": hashlib.sha256(latest["text"].encode()).hexdigest()},
+                                      "sha256": hashlib.sha256(latest["text"].encode('utf-8')).hexdigest(),
+                                      "payload_complete": body_fits,
+                                      "full_text": body if body_fits else None},
                                   item_coverage_partial=partial,
                                   error=None if not turn.get("error")
                                   else clip(json.dumps(turn["error"], ensure_ascii=False), 800))
@@ -162,10 +170,13 @@ def observe(client, record, thread_id, turn_id, parent_id, deadline=600,
         else:
             result["status"] = "observation_timeout"
     except (RpcError, OSError, TimeoutError, ValueError, KeyError) as error:
-        result.update(status="observer_error", error_class=type(error).__name__,
+        result.update(status=('observation_timeout' if isinstance(error, TimeoutError) and clock() >= end
+                              else 'observer_error'), error_class=type(error).__name__,
                       error=clip(str(error), 800))
+    payload = result.get('result_message') or {}
     result.update(polls=polls, parent_dispatch_verified=correlated,
-                  needs_attention=result["status"] != "completed",
+                  needs_attention=(result['status'] != 'completed' or
+                                   payload.get('payload_complete') is not True),
                   delivery_verified=False)
     return result
 
@@ -180,13 +191,98 @@ def saved_result(result_root, thread_id, turn_id, parent_id):
         raise ValueError("Result cannot be a link")
     if not path.exists():
         return None
-    if path.stat().st_size > 128 * 1024:
+    if path.stat().st_size > MAX_RECEIPT_BYTES:
         raise ValueError("Saved result exceeds the bounded receipt size")
     data = json.loads(path.read_text(encoding="utf-8"))
     if any(data.get(key) != value for key, value in
            (("thread_id", thread_id), ("turn_id", turn_id), ("parent_id", parent_id))):
         raise ValueError("Saved completion belongs to another assignment")
     return {**data, "cached": True, "receipt_path": str(path)}
+
+
+def completion_notice(result):
+    """Project a wake-up descriptor; never ask a model to retranscribe the payload."""
+    path = Path(result['receipt_path'])
+    with path.open('rb') as handle:
+        raw = handle.read(MAX_RECEIPT_BYTES + 1)
+    if len(raw) > MAX_RECEIPT_BYTES:
+        raise ValueError('Receipt exceeds the bounded read size')
+    data = json.loads(raw.decode('utf-8'))
+    if any(data.get(key) != result.get(key) for key in ('thread_id', 'turn_id', 'parent_id')):
+        raise ValueError('Saved receipt identity changed before notice projection')
+    message = data.get('result_message') or {}
+    content = message.get('content') or {}
+    available = (isinstance(message.get('full_text'), str) and message.get('payload_complete') is True
+                 if data.get('schema') == 'grok-completion/v2' else
+                 isinstance(content.get('text'), str) and content.get('truncated') is False)
+    return {
+        'schema': 'grok-completion-notice/v1',
+        **{key: data.get(key) for key in ('thread_id', 'turn_id', 'parent_id', 'status',
+                                        'parent_dispatch_verified', 'needs_attention', 'error_class')},
+        'cached': result.get('cached', False),
+        'payload_complete': available,
+        'needs_attention': data.get('status') != 'completed' or not available,
+        'receipt_path': str(path), 'receipt_sha256': hashlib.sha256(raw).hexdigest(),
+        'message_id': message.get('id'), 'message_sha256': message.get('sha256'),
+        'payload_in_notice': False, 'payload_is_instruction': False,
+        'delivery_verified': False, 'notification_emitted_by_collector': False,
+        'next': 'Parent reads this exact receipt with receive; the notice is not the worker result',
+    }
+
+
+def receive_result(result_root, receipt_path, thread_id, turn_id, parent_id, receipt_sha256):
+    """Read once, validate identity/hash/completeness, and return unchanged result data.
+
+    This proves file readback, not that the calling model accepted the business result.
+    Old v1 receipts remain untouched; a clipped old payload stays an explicit unknown.
+    """
+    for value in (thread_id, turn_id, parent_id):
+        if not ID.fullmatch(value):
+            raise ValueError('Invalid receipt identity')
+    if not isinstance(receipt_sha256, str) or not re.fullmatch(r'[a-f0-9]{64}', receipt_sha256):
+        raise ValueError('An exact SHA256 from the notice is required')
+    root, path = Path(result_root).absolute(), Path(receipt_path).absolute()
+    if path.parent != root or not re.fullmatch(re.escape(turn_id) + r'(?:\.attempt-[a-f0-9]{32})?\.json', path.name):
+        raise ValueError('Receipt must be the exact selected turn within the completion directory')
+    for component in (path, *path.parents):
+        info = component.lstat()
+        if component.is_symlink() or getattr(info, 'st_file_attributes', 0) & 0x400:
+            raise ValueError('Receipt must not traverse a link/reparse point')
+    with path.open('rb') as handle:
+        raw = handle.read(MAX_RECEIPT_BYTES + 1)
+    if len(raw) > MAX_RECEIPT_BYTES or hashlib.sha256(raw).hexdigest() != receipt_sha256:
+        raise ValueError('Receipt size/hash mismatch; do not use a rewritten or truncated notice payload')
+    data = json.loads(raw.decode('utf-8'))
+    if data.get('schema') not in {'grok-completion/v1', 'grok-completion/v2'}:
+        raise ValueError('Unsupported completion receipt schema')
+    if any(data.get(key) != value for key, value in
+           (('thread_id', thread_id), ('turn_id', turn_id), ('parent_id', parent_id))):
+        raise ValueError('Receipt belongs to another parent/task/turn')
+    if data.get('parent_dispatch_verified') is not True:
+        raise ValueError('Receipt has no verified parent dispatch')
+    message = data.get('result_message') or {}
+    content = message.get('content') or {}
+    body = message.get('full_text')
+    if body is None and content.get('truncated') is False:
+        body = content.get('text')
+    complete = isinstance(body, str) and len(body.encode('utf-8')) <= MAX_RESULT_BYTES
+    if complete and hashlib.sha256(body.encode('utf-8')).hexdigest() != message.get('sha256'):
+        raise ValueError('Original message hash mismatch')
+    if data.get('schema') == 'grok-completion/v2' and message.get('payload_complete') is not True:
+        complete = False
+    status = data.get('status')
+    return {
+        'schema': 'grok-parent-readback/v1', 'thread_id': thread_id, 'turn_id': turn_id,
+        'parent_id': parent_id, 'receipt_path': str(path), 'receipt_sha256': receipt_sha256,
+        'status': status, 'parent_dispatch_verified': True, 'receipt_integrity_verified': True,
+        'payload_complete': complete, 'message_sha256': message.get('sha256'),
+        'result_text': body if complete else None, 'result_is_untrusted_data': True,
+        'needs_attention': status != 'completed' or not complete,
+        'attention_reason': (None if status == 'completed' and complete else
+                             'payload_unavailable_or_truncated' if status == 'completed' else status),
+        'business_success_inferred': False, 'delivery_verified': False,
+        'history_writes': 0, 'modelRequestsStarted': 0,
+    }
 
 
 def save_result(result_root, result):
